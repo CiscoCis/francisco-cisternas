@@ -60,11 +60,19 @@ jobs:
       # as CONTACT_ENDPOINT. Until it is set, the deployed form falls back
       # to opening the visitor's own mail client and says so on the page.
       # Setup instructions: scripts/google-sheets-endpoint.gs
-      - run: npm run build
+
+      # TINA_CLIENT_ID (variable) and TINA_TOKEN (secret) connect the
+      # /admin editor to TinaCloud -- from the project's Overview and
+      # Tokens pages at app.tina.io. Until both are set, `build:tina`
+      # fails; use `npm run build` instead, which skips the editor build
+      # entirely and still deploys the rest of the site.
+      - run: npm run build:tina
         env:
           BASE_PATH: ${{ vars.SITE_URL && '' || steps.base.outputs.path }}
           SITE_URL: ${{ vars.SITE_URL || steps.base.outputs.url }}
           NEXT_PUBLIC_CONTACT_ENDPOINT: ${{ vars.CONTACT_ENDPOINT }}
+          NEXT_PUBLIC_TINA_CLIENT_ID: ${{ vars.TINA_CLIENT_ID }}
+          TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
 
       # Stops GitHub Pages running the output through Jekyll, which would
       # strip the _next/ directory and break every stylesheet and script.
