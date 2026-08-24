@@ -123,17 +123,38 @@ export const posts: BlogPost[] = [
     ],
   },
   {
-    slug: 'technology-notes-template',
-    title: '[Draft] A note on technology',
-    date: '2026-01-01',
+    slug: 'quantum-marketing',
+    title: 'Quantum Marketing and the fifth paradigm shift',
+    date: '2026-08-25',
     category: 'Technology',
     excerpt:
-      'A ready starting point for a Technology post — a tool, a platform shift, or something worth flagging for the field.',
-    draft: true,
+      'Raja Rajamannar calls it the fifth paradigm shift in marketing — and it maps closely onto the digital/physical interaction I spend most of my time studying.',
     body: [
       {
         type: 'p',
-        text: 'Replace this paragraph with the real piece — the technology, why it is relevant, and what it changes.',
+        text: 'A few years ago Raja Rajamannar, Mastercard’s Chief Marketing Officer, published Quantum Marketing, arguing that the discipline is entering its fifth major paradigm shift. The first four are easy to recognise in hindsight: marketing as simple product promotion, then the rise of the 4 Ps, then brand and emotion, then the arrival of digital and social. What he calls the fifth is different in kind, not just degree — it is being driven simultaneously by AI, biometric and neuro data, AR/VR, blockchain, voice interfaces and a consumer attention span that keeps shrinking under all of it.',
+      },
+      { type: 'h', text: 'Why this maps onto my own research' },
+      {
+        type: 'p',
+        text: 'I keep coming back to this framing because it describes, from the industry side, almost exactly the boundary I study from the academic side: the interaction between digital and physical channels. Quantum Marketing is really a claim about what happens when that boundary stops being a boundary — when a shopper’s in-store behaviour, their mobile app activity and a recommendation engine’s output are all just inputs to the same decision, in real time, rather than three separate channels a firm reports on separately.',
+      },
+      {
+        type: 'quote',
+        text: 'The channel a customer is standing in matters less and less. What matters is whether the firm can act on what it already knows the instant it matters.',
+      },
+      { type: 'h', text: 'Three implications worth sitting with' },
+      {
+        type: 'list',
+        items: [
+          'Personalisation has to earn its keep, not just exist — the same models that make an offer feel timely can make it feel invasive, and the difference is almost entirely about whether the value exchange is legible to the customer.',
+          'Attribution gets harder exactly as it gets more important — the more channels genuinely interact, the less any single-channel model can explain what actually drove a decision.',
+          'Trust is now a channel-design problem, not just a legal or PR one — how and where data is collected shapes how much of it a customer is willing to keep handing over.',
+        ],
+      },
+      {
+        type: 'p',
+        text: 'None of this is abstract for the industries I work with — retail, financial services, sport — all of which are living this shift already, mostly without a clean theory of how to measure it. That gap between what practitioners like Rajamannar are describing and what the data can rigorously support is, more or less, the space my research tries to work in.',
       },
     ],
   },
