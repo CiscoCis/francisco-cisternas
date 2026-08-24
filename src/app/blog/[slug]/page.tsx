@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { visiblePosts, postBySlug, formatPostDate } from '@/data/blog';
+import { postBySlug, formatPostDate } from '@/lib/content/blog';
+import { getVisiblePosts } from '@/lib/content/blog.server';
 import { asset } from '@/lib/asset';
 import { Icon } from '@/components/Icons';
 import styles from './post.module.css';
@@ -14,8 +15,9 @@ type Params = { slug: string };
 const PLACEHOLDER_SLUG = 'no-posts-yet';
 
 export function generateStaticParams(): Params[] {
-  if (!visiblePosts.length) return [{ slug: PLACEHOLDER_SLUG }];
-  return visiblePosts.map((p) => ({ slug: p.slug }));
+  const posts = getVisiblePosts();
+  if (!posts.length) return [{ slug: PLACEHOLDER_SLUG }];
+  return posts.map((p) => ({ slug: p.slug }));
 }
 
 // Required for a fully static export: only the slugs above exist, anything
@@ -28,7 +30,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = postBySlug(slug);
+  const post = postBySlug(getVisiblePosts(), slug);
   if (!post) {
     return { title: 'Blog', robots: { index: false, follow: false } };
   }
@@ -50,7 +52,8 @@ export default async function PostPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const post = postBySlug(slug);
+  const posts = getVisiblePosts();
+  const post = postBySlug(posts, slug);
 
   if (!post) {
     if (slug !== PLACEHOLDER_SLUG) notFound();
@@ -75,7 +78,7 @@ export default async function PostPage({
     );
   }
 
-  const others = visiblePosts.filter((p) => p.slug !== post.slug).slice(0, 2);
+  const others = posts.filter((p) => p.slug !== post.slug).slice(0, 2);
 
   return (
     <main id="main" className={styles.main}>

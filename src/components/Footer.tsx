@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { profile } from '@/data/profile';
-import { NAV } from '@/data/nav';
+import type { NavItem } from '@/data/nav';
 import { Icon } from './Icons';
 import styles from './Footer.module.css';
 
 // Only verified information appears — no social accounts have been
 // supplied, so none are fabricated.
-export default function Footer() {
+export default function Footer({ nav }: { nav: NavItem[] }) {
   // Static export: keep this deterministic, update on rebuild.
   const year = 2026;
 
@@ -15,7 +15,7 @@ export default function Footer() {
       <div className={`container ${styles.inner}`}>
         <nav className={styles.nav} aria-label="Footer">
           <ul>
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <li key={item.id}>
                 <a href={`/#${item.id}`}>{item.label}</a>
               </li>

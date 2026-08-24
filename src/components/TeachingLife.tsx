@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { visibleTeachingStories } from '@/data/teachingStories';
+import type { TeachingStory } from '@/lib/content/teachingStories';
 import { asset } from '@/lib/asset';
 import { Icon } from './Icons';
 import styles from './TeachingLife.module.css';
@@ -18,9 +18,8 @@ import styles from './TeachingLife.module.css';
  * production site rather than filling the space with invented memories.
  */
 
-export default function TeachingLife() {
+export default function TeachingLife({ stories }: { stories: TeachingStory[] }) {
   const [open, setOpen] = useState<string | null>(null);
-  const stories = visibleTeachingStories;
 
   if (!stories.length) return null;
 

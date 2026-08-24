@@ -1,0 +1,18 @@
+{
+  "label": "Faculty",
+  "icon": "users",
+  "items": [
+    {
+      "role": "Committee Member on Integrated BBA Programme",
+      "detail": "Two terms of one year each"
+    },
+    {
+      "role": "Board of the Faculty of Business Administration",
+      "detail": "Elected member — two terms"
+    },
+    {
+      "role": "New Programme on Business Data Analytics",
+      "detail": "Task force member — volunteered"
+    }
+  ]
+}

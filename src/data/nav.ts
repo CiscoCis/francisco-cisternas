@@ -1,23 +1,20 @@
-// Built from the content rather than hard-coded, so a nav item can never point
-// at a section that didn't render (e.g. Media & Stories only appears once
-// src/data/media.ts has a publishable item). "Home" isn't listed — the
-// wordmark in the header is the home link.
-
-import { mediaItems } from './media';
-
-const isProd = process.env.NODE_ENV === 'production';
-
-export const hasMedia = mediaItems.some((m) => m.url || !isProd);
+// Nav structure, built server-side (in layout.tsx, where the "does Media
+// have anything to show" check can read content off disk) and passed down
+// as a prop — Header is a client component, and reading content files isn't
+// available in a client bundle. "Home" isn't listed — the wordmark in the
+// header is the home link.
 
 export type NavItem = { id: string; label: string };
 
-export const NAV: NavItem[] = [
-  { id: 'about', label: 'About' },
-  { id: 'research', label: 'Research' },
-  { id: 'teaching', label: 'Teaching' },
-  { id: 'service', label: 'Service' },
-  ...(hasMedia ? [{ id: 'media', label: 'Media & Stories' }] : []),
-  { id: 'writing', label: 'Blog' },
-  { id: 'beyond', label: 'Beyond Work' },
-  { id: 'contact', label: 'Contact' },
-];
+export function buildNav(hasMedia: boolean): NavItem[] {
+  return [
+    { id: 'about', label: 'About' },
+    { id: 'research', label: 'Research' },
+    { id: 'teaching', label: 'Teaching' },
+    { id: 'service', label: 'Service' },
+    ...(hasMedia ? [{ id: 'media', label: 'Media & Stories' }] : []),
+    { id: 'writing', label: 'Blog' },
+    { id: 'beyond', label: 'Beyond Work' },
+    { id: 'contact', label: 'Contact' },
+  ];
+}

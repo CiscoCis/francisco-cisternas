@@ -1,0 +1,16 @@
+{
+  "title": "Mathematical Programming for the efficient use of breeding nets in a Salmon Company",
+  "authors": "Cisternas F, Duran W, Polgatiz C, Weintraub A.",
+  "venue": "Journal of Systems Engineering",
+  "year": 2009,
+  "detail": "23: 27–47",
+  "url": "https://www.academia.edu/71146282/Optimizing_salmon_farm_cage_net_management_using_integer_programming",
+  "image": "/images/research/Mathprog.png",
+  "imageAlt": "Figure from the mathematical programming study of salmon breeding nets",
+  "abstract": "Salmon farming in Chile constitutes one of the nation’s principal food exporting sectors. In the seawater stage, one of the most important in the farm production chain, salmon are cultivated in floating cages fitted with nets that hold the fish during the entire grow-out process. The maintenance of the cage nets is carried out at land-based facilities. This article reports on the creation of an integer programming tool for grow-out centres that optimizes resource use, improves planning and generates economic evaluations for supporting analysis and decision-making relating to the maintenance, repair and periodic changing of cage nets. The tool prototype was tested in a single operating area of one of Chile’s largest salmon farmers. The results demonstrated a reduction in net maintenance costs of almost 18%, plus a series of important qualitative benefits. Implementation of the tool by farm operators awaits the end of the current crisis in the industry.",
+  "keywords": [
+    "mathematical programming",
+    "optimization"
+  ],
+  "category": "published"
+}

@@ -1,4 +1,4 @@
-import { mediaItems } from '@/data/media';
+import type { MediaItem } from '@/lib/content/media';
 import SectionHeader from '../SectionHeader';
 import TriangleField from '../TriangleField';
 import Reveal from '../Reveal';
@@ -30,8 +30,8 @@ const TINT: Record<string, string> = {
   Interview: 'var(--cyan)',
 };
 
-export default function Media() {
-  const items = mediaItems.filter((m) => m.url || !isProd);
+export default function Media({ items: allItems }: { items: MediaItem[] }) {
+  const items = allItems.filter((m) => m.url || !isProd);
   if (!items.length) return null;
 
   return (

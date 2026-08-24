@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BlogCategory, BlogPost, formatPostDate } from '@/data/blog';
+import { BlogCategory, BlogPost, formatPostDate } from '@/lib/content/blog';
 import { asset } from '@/lib/asset';
 import { Icon } from './Icons';
 import styles from './PostCard.module.css';

@@ -1,0 +1,39 @@
+// Server-only: reads content/service/*.json off disk. Import this only from
+// Server Components — see service.ts for the client-safe types. Group and
+// item order follows filename order (numeric-prefix filenames to control it).
+
+import { readCollection } from './_fs';
+import type { ServiceGroup, ServiceItem } from './service';
+import type { IconName } from '@/components/Icons';
+
+interface RawServiceItem {
+  role: string;
+  detail?: string | null;
+}
+
+interface RawServiceGroup {
+  label: string;
+  icon?: string | null;
+  items?: (RawServiceItem | null)[] | null;
+  subGroups?: ({ label: string; items?: (RawServiceItem | null)[] | null } | null)[] | null;
+}
+
+function mapItems(items?: (RawServiceItem | null)[] | null): ServiceItem[] {
+  return (items ?? [])
+    .filter((i): i is RawServiceItem => !!i)
+    .map((i) => ({ role: i.role, detail: i.detail ?? undefined }));
+}
+
+export function getServiceGroups(): ServiceGroup[] {
+  return readCollection<RawServiceGroup>('service').map(({ id, data }) => ({
+    id,
+    label: data.label,
+    icon: (data.icon ?? 'building') as IconName,
+    items: mapItems(data.items),
+    subGroups: data.subGroups?.length
+      ? data.subGroups
+          .filter((s): s is NonNullable<typeof s> => !!s)
+          .map((s) => ({ label: s.label, items: mapItems(s.items) }))
+      : undefined,
+  }));
+}

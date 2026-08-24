@@ -2,14 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import { profile } from '@/data/profile';
-import {
-  CATEGORY_LABELS,
-  PublicationCategory,
-  publications,
-  yearsFor,
-} from '@/data/publications';
-import { awardedGrants, inPreparationGrants } from '@/data/grants';
-import { awards } from '@/data/awards';
+import type { Publication, PublicationCategory } from '@/lib/content/publications';
+import { CATEGORY_LABELS, yearsFor } from '@/lib/content/publications';
+import type { Grant } from '@/lib/content/grants';
+import type { Award } from '@/lib/content/awards';
+import type { Talk, Keynote } from '@/lib/content/conferences';
 import SectionHeader from '../SectionHeader';
 import PublicationItem from '../PublicationItem';
 import Talks from '../Talks';
@@ -46,13 +43,29 @@ const METHOD_ICONS: IconName[] = [
   'optimize',
 ];
 
-export default function ResearchPublications() {
+interface ResearchPublicationsProps {
+  publications: Record<PublicationCategory, Publication[]>;
+  awardedGrants: Grant[];
+  inPreparationGrants: Grant[];
+  awards: Award[];
+  talks: Talk[];
+  keynotes: Keynote[];
+}
+
+export default function ResearchPublications({
+  publications,
+  awardedGrants,
+  inPreparationGrants,
+  awards,
+  talks,
+  keynotes,
+}: ResearchPublicationsProps) {
   const [panel, setPanel] = useState<Panel>('research');
   const [category, setCategory] = useState<PublicationCategory>('published');
   const [query, setQuery] = useState('');
   const [year, setYear] = useState<string>('all');
 
-  const years = useMemo(() => yearsFor(category), [category]);
+  const years = useMemo(() => yearsFor(publications[category]), [publications, category]);
 
   /* Category + search + year combine. */
   const results = useMemo(() => {
@@ -77,7 +90,7 @@ export default function ResearchPublications() {
     return [...matched].sort(
       (a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))
     );
-  }, [category, query, year]);
+  }, [publications, category, query, year]);
 
   const changeCategory = (c: PublicationCategory) => {
     setCategory(c);
@@ -375,7 +388,7 @@ export default function ResearchPublications() {
             aria-labelledby="rp-tab-talks"
             className="tabpanel"
           >
-            <Talks />
+            <Talks talks={talks} keynotes={keynotes} />
           </div>
         )}
       </div>

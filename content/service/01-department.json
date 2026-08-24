@@ -1,0 +1,35 @@
+{
+  "label": "Department",
+  "icon": "building",
+  "items": [
+    {
+      "role": "Department Executive Committee",
+      "detail": "Elected member — two terms of two years"
+    },
+    {
+      "role": "Faculty Recruitment Committee"
+    },
+    {
+      "role": "Center for Consumer Insights",
+      "detail": "Board member"
+    },
+    {
+      "role": "PhD Students Committee at the Department of Marketing"
+    },
+    {
+      "role": "Summer Workshop"
+    },
+    {
+      "role": "Designer of new Qualifying Exam for quantitative marketing students"
+    },
+    {
+      "role": "Coordinator for additional lectures for PhD students in preparation for Qualifying Exam"
+    },
+    {
+      "role": "Department Library Committee"
+    },
+    {
+      "role": "Masters Students graduation ceremony"
+    }
+  ]
+}

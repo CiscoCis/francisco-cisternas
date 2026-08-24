@@ -1,0 +1,14 @@
+{
+  "slug": "travel-notes-template",
+  "title": "[Draft] Notes from a trip",
+  "date": "2026-01-01",
+  "category": "Travel",
+  "excerpt": "A ready starting point for a Travel post — a conference, a field trip, or a place worth writing about.",
+  "draft": true,
+  "body": [
+    {
+      "_template": "p",
+      "text": "Replace this paragraph with the real piece — where the trip was, what it was for, and what stood out."
+    }
+  ]
+}

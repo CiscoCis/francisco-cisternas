@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { keynotes, talks, talkYears } from '@/data/conferences';
+import type { Talk, Keynote } from '@/lib/content/conferences';
+import { talkYears } from '@/lib/content/conferences';
 import { Icon } from './Icons';
 import styles from './Talks.module.css';
 
@@ -15,15 +16,23 @@ type Tab = 'talks' | 'keynotes';
 /** Years shown before the list has to be expanded. */
 const RECENT_YEARS = 3;
 
-export default function Talks() {
+export default function Talks({
+  talks,
+  keynotes,
+}: {
+  talks: Talk[];
+  keynotes: Keynote[];
+}) {
   const [tab, setTab] = useState<Tab>('talks');
   const [year, setYear] = useState<string>('all');
   const [showAll, setShowAll] = useState(false);
 
+  const years = useMemo(() => talkYears(talks), [talks]);
+
   const filtered = useMemo(
     () =>
       year === 'all' ? talks : talks.filter((t) => String(t.year) === year),
-    [year]
+    [talks, year]
   );
 
   const grouped = useMemo(() => {
@@ -83,7 +92,7 @@ export default function Talks() {
               }}
             >
               <option value="all">All years</option>
-              {talkYears.map((y) => (
+              {years.map((y) => (
                 <option key={y} value={String(y)}>
                   {y}
                 </option>

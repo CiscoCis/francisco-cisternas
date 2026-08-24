@@ -1,0 +1,14 @@
+{
+  "slug": "teaching-notes-template",
+  "title": "[Draft] A note from the classroom",
+  "date": "2026-01-01",
+  "category": "Teaching",
+  "excerpt": "A ready starting point for a Teaching post — a class, a case discussion, something a student asked that stuck with you.",
+  "draft": true,
+  "body": [
+    {
+      "_template": "p",
+      "text": "Replace this paragraph with the real piece — what happened in class, what a student asked, or what changed how you teach something."
+    }
+  ]
+}

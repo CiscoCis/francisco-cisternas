@@ -1,0 +1,29 @@
+{
+  "label": "College & University",
+  "icon": "bank",
+  "items": [
+    {
+      "role": "Develop a new qualifying exam for quantitative marketing students"
+    },
+    {
+      "role": "Participant in graduation ceremony"
+    },
+    {
+      "role": "Student Exchange Committee member",
+      "detail": "Three terms of two years each"
+    },
+    {
+      "role": "College Student Advisor Scheme"
+    }
+  ],
+  "subGroups": [
+    {
+      "label": "University",
+      "items": [
+        {
+          "role": "Leading Exchange programme between CUHK and Universities in Chile"
+        }
+      ]
+    }
+  ]
+}

@@ -1,15 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { serviceGroups, servicePullQuote } from '@/data/service';
+import type { ServiceGroup } from '@/lib/content/service';
+import { servicePullQuote } from '@/lib/content/service';
 import SectionHeader from '../SectionHeader';
 import TriangleField from '../TriangleField';
 import { Icon } from '../Icons';
 import styles from './Service.module.css';
 
-export default function Service() {
-  const [active, setActive] = useState(serviceGroups[0].id);
+export default function Service({ serviceGroups }: { serviceGroups: ServiceGroup[] }) {
+  const [active, setActive] = useState(serviceGroups[0]?.id);
   const group = serviceGroups.find((g) => g.id === active) ?? serviceGroups[0];
+
+  if (!group) return null;
 
   return (
     <section id="service" className="section" aria-labelledby="service-h">

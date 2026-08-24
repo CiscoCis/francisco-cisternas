@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useState } from 'react';
-import { Publication, citationFor } from '@/data/publications';
+import { Publication, citationFor } from '@/lib/content/publications';
 import { asset } from '@/lib/asset';
 import { Icon } from './Icons';
 import Modal from './Modal';

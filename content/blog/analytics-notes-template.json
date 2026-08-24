@@ -1,0 +1,14 @@
+{
+  "slug": "analytics-notes-template",
+  "title": "[Draft] A note on analytics",
+  "date": "2026-01-01",
+  "category": "Analytics",
+  "excerpt": "A ready starting point for an Analytics post — a method, a tool, or a way of looking at data worth writing down.",
+  "draft": true,
+  "body": [
+    {
+      "_template": "p",
+      "text": "Replace this paragraph with the real piece — a technique, a dataset, or a way of thinking about analytics worth sharing."
+    }
+  ]
+}

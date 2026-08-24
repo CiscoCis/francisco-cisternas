@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { visiblePosts } from '@/data/blog';
+import { getVisiblePosts } from '@/lib/content/blog.server';
 import BlogArchive from '@/components/BlogArchive';
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function BlogIndexPage() {
   return (
     <main id="main">
-      <BlogArchive posts={visiblePosts} />
+      <BlogArchive posts={getVisiblePosts()} />
     </main>
   );
 }

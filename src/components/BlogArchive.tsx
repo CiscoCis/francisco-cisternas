@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { BlogPost } from '@/data/blog';
+import { BlogPost } from '@/lib/content/blog';
 import PostCard from './PostCard';
 import { Icon } from './Icons';
 import styles from './BlogArchive.module.css';

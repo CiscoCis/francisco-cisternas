@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import { profile } from '@/data/profile';
+import { buildNav } from '@/data/nav';
+import { hasMedia } from '@/lib/content/media';
+import { getMediaItems } from '@/lib/content/media.server';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import './globals.css';
@@ -150,6 +153,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const nav = buildNav(hasMedia(getMediaItems()));
+
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
       <head>
@@ -162,9 +167,9 @@ export default function RootLayout({
         <a className="skip-link" href="#main">
           Skip to main content
         </a>
-        <Header />
+        <Header nav={nav} />
         {children}
-        <Footer />
+        <Footer nav={nav} />
       </body>
     </html>
   );

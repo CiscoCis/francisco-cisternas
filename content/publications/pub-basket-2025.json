@@ -1,0 +1,19 @@
+{
+  "title": "Basket-Enhanced Heterogeneous Hypergraph for Price-Sensitive Next Basket Recommendation",
+  "authors": "Zhou Y, Wang Y, Cui Q, Guan X, Cisternas F.",
+  "venue": "2025 IEEE International Conference on Acoustics, Speech and Signal Processing",
+  "year": 2025,
+  "keywords": [
+    "recommendation",
+    "machine learning",
+    "pricing",
+    "retail"
+  ],
+  "url": "https://ieeexplore.ieee.org/document/10887705",
+  "pdf": "https://www.researchgate.net/publication/384116129_Basket-Enhanced_Heterogenous_Hypergraph_for_Price-Sensitive_Next_Basket_Recommendation",
+  "image": "/images/research/Basket.png",
+  "imageAlt": "Figure from the Basket-Enhanced Heterogeneous Hypergraph paper",
+  "featured": true,
+  "abstract": "Next Basket Recommendation (NBR) is a new type of recommender system that predicts combinations of items users are likely to purchase together. Existing NBR models often overlook a crucial factor, which is price, and do not fully capture item-basket-user interactions. To address these limitations, we propose a novel method called Basket-augmented Dynamic Heterogeneous Hypergraph (BDHH). BDHH utilizes a heterogeneous multi-relational graph to capture the intricate relationships among item features, with price as a critical factor. Moreover, our approach includes a basket-guided dynamic augmentation network that could dynamically enhances item-basket-user interactions. Experiments on real-world datasets demonstrate that BDHH significantly improves recommendation accuracy, providing a more comprehensive understanding of user behavior.",
+  "category": "published"
+}

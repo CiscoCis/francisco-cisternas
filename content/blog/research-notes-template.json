@@ -1,0 +1,14 @@
+{
+  "slug": "research-notes-template",
+  "title": "[Draft] Behind a paper",
+  "date": "2026-01-01",
+  "category": "Research",
+  "excerpt": "A ready starting point for a Research post — the story behind a paper, a finding that surprised you, or work in progress.",
+  "draft": true,
+  "body": [
+    {
+      "_template": "p",
+      "text": "Replace this paragraph with the real piece — what the research is about, why it matters, or what did not make it into the paper itself."
+    }
+  ]
+}

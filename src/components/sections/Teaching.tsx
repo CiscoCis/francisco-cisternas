@@ -3,6 +3,7 @@ import {
   teachingReach,
   teachingRecognition,
 } from '@/data/teaching';
+import type { TeachingStory } from '@/lib/content/teachingStories';
 import Photo from '../Photo';
 import Reveal from '../Reveal';
 import TriangleField from '../TriangleField';
@@ -10,7 +11,7 @@ import TeachingLife from '../TeachingLife';
 import { Icon } from '../Icons';
 import styles from './Teaching.module.css';
 
-export default function Teaching() {
+export default function Teaching({ teachingStories }: { teachingStories: TeachingStory[] }) {
   return (
     <section
       id="teaching"
@@ -138,7 +139,7 @@ export default function Teaching() {
         </div>
 
         {/* ---------- teaching life (change requirements §6.2) ---------- */}
-        <TeachingLife />
+        <TeachingLife stories={teachingStories} />
       </div>
     </section>
   );

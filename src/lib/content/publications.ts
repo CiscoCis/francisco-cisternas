@@ -1,8 +1,7 @@
-// Mirrors src/data/publications.ts field-for-field, sourced from Tina's
-// content/publications/*.json instead of a literal array. See _fs.ts for why
-// this reads the filesystem directly rather than Tina's GraphQL client.
-
-import { readCollection } from './_fs';
+// Types and pure helpers only — safe to import from client components.
+// The fs-reading fetcher lives in publications.server.ts, split out because
+// bundlers include a module's imports (here, node:fs via _fs.ts) even when
+// only its type-safe exports are used, which breaks the client bundle.
 
 export type PublicationCategory = 'published' | 'under-review' | 'books' | 'working';
 
@@ -30,57 +29,6 @@ export const CATEGORY_LABELS: Record<PublicationCategory, string> = {
   books: 'Books & Chapters',
   working: 'Working Papers',
 };
-
-interface RawPublication {
-  title: string;
-  category: PublicationCategory;
-  authors?: string | null;
-  venue?: string | null;
-  year?: number | null;
-  status?: string | null;
-  detail?: string | null;
-  doi?: string | null;
-  url?: string | null;
-  pdf?: string | null;
-  abstract?: string | null;
-  keywords?: (string | null)[] | null;
-  image?: string | null;
-  imageAlt?: string | null;
-  featured?: boolean | null;
-}
-
-/** All publications, grouped by category — same shape as the old `publications` export. */
-export function getPublications(): Record<PublicationCategory, Publication[]> {
-  const result: Record<PublicationCategory, Publication[]> = {
-    published: [],
-    'under-review': [],
-    books: [],
-    working: [],
-  };
-
-  for (const { id, data } of readCollection<RawPublication>('publications')) {
-    if (!(data.category in result)) continue;
-    result[data.category].push({
-      id,
-      title: data.title,
-      authors: data.authors ?? '',
-      venue: data.venue ?? '',
-      year: data.year ?? null,
-      status: data.status ?? undefined,
-      detail: data.detail ?? undefined,
-      doi: data.doi ?? undefined,
-      url: data.url ?? undefined,
-      pdf: data.pdf ?? undefined,
-      abstract: data.abstract ?? undefined,
-      keywords: data.keywords?.filter((k): k is string => !!k) ?? undefined,
-      image: data.image ?? undefined,
-      imageAlt: data.imageAlt ?? undefined,
-      featured: data.featured ?? undefined,
-    });
-  }
-
-  return result;
-}
 
 /** Years present in a given list, newest first. */
 export function yearsFor(list: Publication[]): number[] {

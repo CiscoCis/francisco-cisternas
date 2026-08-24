@@ -1,0 +1,39 @@
+{
+  "slug": "how-this-blog-works",
+  "title": "How this blog works",
+  "date": "2026-01-01",
+  "category": "Reflections",
+  "excerpt": "A template post. It explains how to add writing to this site and disappears the moment you publish something real.",
+  "draft": true,
+  "body": [
+    {
+      "_template": "p",
+      "text": "This post only appears while the site is running locally. It is here so the blog has something to show before the first real piece is written."
+    },
+    {
+      "_template": "h",
+      "text": "Adding a post"
+    },
+    {
+      "_template": "p",
+      "text": "Open src/data/blog.ts, copy this entry, and change the fields. The listing page, the archive, the category filters and the individual post page all update by themselves."
+    },
+    {
+      "_template": "list",
+      "items": [
+        "slug becomes the web address: /blog/your-slug",
+        "date is written as YYYY-MM-DD",
+        "category is one of Teaching, Research, Analytics, Technology, Travel or Reflections",
+        "remove draft: true when the post is ready to go live"
+      ]
+    },
+    {
+      "_template": "quote",
+      "text": "Adding post 2, 3, 10 or 50 should not require changing the page structure — and it does not."
+    },
+    {
+      "_template": "p",
+      "text": "Readers reply through the contact form rather than a public comment thread, so a link to it sits at the end of every post."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "label": "External",
+  "icon": "globe",
+  "items": [
+    {
+      "role": "Management Science",
+      "detail": "Ad-hoc Reviewer"
+    },
+    {
+      "role": "Information Systems Research",
+      "detail": "Ad-hoc Reviewer"
+    },
+    {
+      "role": "Frontiers",
+      "detail": "Ad-hoc Reviewer"
+    },
+    {
+      "role": "Australia and New Zealand Marketing Academy conference",
+      "detail": "Ad-hoc Reviewer"
+    },
+    {
+      "role": "SN Business & Economics",
+      "detail": "Ad-hoc Reviewer"
+    },
+    {
+      "role": "Book: Agro-biotechnology in Diverse Perspective",
+      "detail": "Ad-hoc Reviewer"
+    },
+    {
+      "role": "National Commission for Scientific and Technological Research – Chile",
+      "detail": "Ad-hoc Reviewer"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { visiblePosts } from '@/data/blog';
+import type { BlogPost } from '@/lib/content/blog';
 import SectionHeader from '../SectionHeader';
 import Reveal from '../Reveal';
 import TriangleField from '../TriangleField';
@@ -20,8 +20,8 @@ import styles from './Writing.module.css';
  * disappears the moment the first post goes live.
  */
 
-export default function Writing() {
-  const latest = visiblePosts.slice(0, 6);
+export default function Writing({ posts }: { posts: BlogPost[] }) {
+  const latest = posts.slice(0, 6);
 
   return (
     <section id="writing" className="section" aria-labelledby="writing-h">
@@ -47,7 +47,7 @@ export default function Writing() {
               </Carousel>
             </Reveal>
 
-            {visiblePosts.length > latest.length && (
+            {posts.length > latest.length && (
               <p className={styles.more}>
                 <Link href="/blog" className="link-arrow">
                   All posts

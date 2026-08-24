@@ -19,16 +19,20 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dir = join(root, 'public/images/research');
+const contentDir = join(root, 'content/publications');
 
-/* Read the expected paths straight out of the data file, so this can never
-   drift from what the site actually asks for. */
-const src = readFileSync(join(root, 'src/data/publications.ts'), 'utf8');
-const expected = [...src.matchAll(/image:\s*'(\/images\/research\/[^']+)'/g)].map(
-  (m) => basename(m[1])
-);
+/* Read the expected paths straight out of the content files, so this can
+   never drift from what the site actually asks for. */
+const files = existsSync(contentDir)
+  ? readdirSync(contentDir).filter((f) => f.endsWith('.json'))
+  : [];
+const expected = files
+  .map((f) => JSON.parse(readFileSync(join(contentDir, f), 'utf8')).image)
+  .filter((image) => typeof image === 'string' && image.startsWith('/images/research/'))
+  .map((image) => basename(image));
 
 if (!expected.length) {
-  console.log('No publication figures are referenced in src/data/publications.ts.');
+  console.log('No publication figures are referenced in content/publications/.');
   process.exit(0);
 }
 

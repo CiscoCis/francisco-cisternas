@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { profile } from '@/data/profile';
-import { NAV } from '@/data/nav';
+import type { NavItem } from '@/data/nav';
 import { Icon } from './Icons';
 import styles from './Header.module.css';
 
@@ -14,7 +14,7 @@ import styles from './Header.module.css';
 // from anywhere else they navigate to /#section and let the browser do the
 // rest.
 
-export default function Header() {
+export default function Header({ nav }: { nav: NavItem[] }) {
   const pathname = usePathname();
   const isHome = pathname === '/';
 
@@ -34,7 +34,7 @@ export default function Header() {
       setAtTop(false);
       return;
     }
-    const sections = ['home', ...NAV.map((n) => n.id)]
+    const sections = ['home', ...nav.map((n) => n.id)]
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => Boolean(el));
     if (!sections.length) return;
@@ -134,7 +134,7 @@ export default function Header() {
   const [wordmarkFirst, ...wordmarkRest] = profile.name.split(' ');
   const wordmarkLast = wordmarkRest.join(' ');
 
-  const items = NAV.map((item) => ({
+  const items = nav.map((item) => ({
     ...item,
     isActive: isHome ? active === item.id : false,
   }));
