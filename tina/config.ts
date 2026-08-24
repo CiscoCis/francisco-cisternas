@@ -77,6 +77,7 @@ export default defineConfig({
         path: 'content/publications',
         format: 'json',
         ui: { router: () => undefined },
+        indexes: [{ name: 'ByCategory', fields: [{ name: 'category' }] }],
         fields: [
           { type: 'string', name: 'title', label: 'Title', isTitle: true, required: true },
           {
