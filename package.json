@@ -8,7 +8,7 @@
     "dev": "tinacms dev -c \"next dev\"",
     "build": "next build",
     "dev:next-only": "next dev",
-    "build:tina": "dotenv -e .env.local -- tinacms build && next build",
+    "build:tina": "dotenv -e .env.local -- tinacms build --skip-cloud-checks && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
