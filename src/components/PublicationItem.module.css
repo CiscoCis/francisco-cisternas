@@ -1,0 +1,355 @@
+.card {
+  min-width: 0;
+  height: 100%;
+}
+
+.card:hover {
+  border-color: var(--accent-300);
+  box-shadow: var(--shadow-sm);
+}
+
+/*
+ * The figure. `contain` rather than `cover`: these are research figures,
+ * and cropping one can remove the very thing it is showing. The pale tint
+ * behind fills whatever letterboxing that leaves.
+ */
+.media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  padding: 12px;
+  border: 0;
+  border-bottom: 1px solid var(--line-soft);
+  background: linear-gradient(160deg, var(--blue-050), #ffffff 70%);
+  cursor: pointer;
+}
+
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+button.media:hover img {
+  transform: scale(1.02);
+}
+
+/* A quiet "Abstract" hint that fades up when the figure is hovered. */
+.mediaHint {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue);
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity var(--dur) var(--ease),
+    transform var(--dur-slow) var(--ease-out);
+}
+
+button.media:hover .mediaHint,
+button.media:focus-visible .mediaHint {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.media:hover img,
+  .mediaHint {
+    transform: none;
+  }
+}
+
+/* On touch there is no hover, so the hint is simply always there. */
+@media (hover: none) and (pointer: coarse) {
+  .mediaHint {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 24px 26px 24px;
+  min-width: 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.year {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  line-height: 1;
+  color: var(--accent-600);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(19px, 1.5vw, 22px);
+  line-height: 1.3;
+  color: var(--brand-900);
+}
+
+.title a {
+  color: inherit;
+}
+
+.title a:hover {
+  color: var(--accent-600);
+}
+
+.authors {
+  margin-top: 11px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.venue {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.venue em {
+  font-style: italic;
+  color: var(--brand-700);
+}
+
+.detail {
+  color: var(--muted);
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 15px;
+}
+
+.keywords li {
+  padding: 4px 10px;
+  border-radius: 3px;
+  background: var(--bg-tint);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* ---------- actions ----------------------------------------------------- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--blue);
+  white-space: nowrap;
+  transition: border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease), transform var(--dur-slow) var(--ease-out);
+}
+
+.action:hover {
+  border-color: var(--blue-200);
+  color: var(--blue);
+  transform: translateY(-1px);
+}
+
+.action svg {
+  flex: none;
+  opacity: 0.8;
+}
+
+.chev,
+.chevOpen {
+  transition: transform var(--dur) var(--ease);
+}
+
+.chevOpen {
+  transform: rotate(180deg);
+}
+
+/* ---------- expansions -------------------------------------------------- */
+
+.expand {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: 8px;
+  background: var(--bg-warm);
+  border: 1px solid var(--line-soft);
+  font-size: 15px;
+  line-height: 1.72;
+  color: var(--ink);
+  animation: expandIn 240ms var(--ease) both;
+}
+
+@keyframes expandIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.citationText {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 13px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-pure);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-700);
+}
+
+.copyBtn:hover {
+  border-color: var(--accent-300);
+  color: var(--accent-600);
+}
+
+.doi {
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: var(--muted-light);
+  letter-spacing: 0.01em;
+}
+
+/* ---------- featured ---------------------------------------------------- */
+
+.featured {
+  grid-column: 1 / -1;
+}
+
+.featured .title {
+  font-size: clamp(22px, 2vw, 28px);
+}
+
+@media (min-width: 900px) {
+  .featured {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: stretch;
+  }
+  .featured .media {
+    aspect-ratio: auto;
+    height: 100%;
+  }
+  .featured .body {
+    padding: 30px 32px;
+  }
+}
+
+/* ---------- responsive -------------------------------------------------- */
+
+@media (hover: none) and (pointer: coarse), (max-width: 1080px) {
+  .action,
+  .copyBtn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 520px) {
+  .body {
+    padding: 20px 18px;
+  }
+  .actions {
+    gap: 7px;
+  }
+  .action {
+    padding: 8px 11px;
+    font-size: 13px;
+  }
+}
+
+/* ---------- inside the abstract dialog ---------------------------------- */
+
+.dialogFigure {
+  margin: 0 0 22px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: linear-gradient(160deg, var(--blue-050), #ffffff 70%);
+}
+
+.dialogFigure img {
+  width: 100%;
+  height: auto;
+  max-height: 34vh;
+  object-fit: contain;
+  margin-inline: auto;
+}
+
+.dialogAuthors {
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.dialogKeywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 24px;
+}
+
+.dialogKeywords li {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--line);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}

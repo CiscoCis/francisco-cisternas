@@ -1,0 +1,733 @@
+/* ---------- primary internal tabs --------------------------------------- */
+
+.panelTabs {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border: 1px solid var(--line);
+  border-radius: 10px 10px 0 0;
+  background: var(--bg-warm);
+  overflow: hidden;
+}
+
+.panelTab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  padding: 20px 16px;
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--muted);
+  border-right: 1px solid var(--line);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.panelTab:last-child {
+  border-right: 0;
+}
+
+.panelTab svg {
+  opacity: 0.7;
+  flex: none;
+}
+
+.panelTab:hover {
+  color: var(--brand-700);
+  background: var(--bg-pure);
+}
+
+.panelTabActive {
+  background: var(--bg-pure);
+  color: var(--brand-700);
+  font-weight: 600;
+}
+
+.panelTabActive svg {
+  opacity: 1;
+}
+
+.panelTabActive::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  background: var(--blue);
+}
+
+/* ---------- research panel ---------------------------------------------- */
+
+.researchPanel {
+  position: relative;
+  z-index: 1;
+  padding: 54px 0 8px;
+}
+
+/* Statement + globe sit side by side, each in normal flow — nothing here
+   is absolutely positioned, so the globe can never overlap the tab bar
+   above it or the topics grid below it, at any viewport width. */
+.heroRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.heroText {
+  flex: 1 1 420px;
+  min-width: 0;
+  max-width: 480px;
+}
+
+.statement {
+  max-width: 17ch;
+}
+
+/* Flexible region, not a fixed-width box pinned to the row's right edge —
+   the globe (a fixed size, set below) centers *within* whatever space is
+   left after the text column, so it reads as centred in the available
+   area rather than sitting flush against the edge of the container. */
+.globeCol {
+  flex: 1 1 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 260px;
+}
+
+.globe {
+  width: 340px;
+  height: 340px;
+  max-width: 100%;
+}
+
+@media (max-width: 1180px) {
+  .globe {
+    width: 280px;
+    height: 280px;
+  }
+}
+
+@media (max-width: 900px) {
+  .heroRow {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .heroText {
+    max-width: none;
+  }
+  .globeCol {
+    width: 100%;
+  }
+  .globe {
+    width: 260px;
+    height: 260px;
+  }
+}
+
+@media (max-width: 480px) {
+  .globe {
+    width: 220px;
+    height: 220px;
+  }
+}
+
+.subStatement {
+  margin-top: 26px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  max-width: 46ch;
+}
+
+.topics {
+  position: relative;
+  z-index: 1;
+  margin-top: 54px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--line);
+}
+
+.topics li {
+  position: relative;
+  padding: 30px 26px 30px 0;
+  border-right: 1px solid var(--line);
+}
+
+.topics li:last-child {
+  border-right: 0;
+}
+
+.topics li::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 42px;
+  height: 1px;
+  background: var(--red);
+}
+
+.topicNum {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 44px;
+  line-height: 1;
+  color: var(--brand-900);
+  opacity: 0.9;
+}
+
+.topicIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin-top: 18px;
+  border-radius: 50%;
+  background: var(--brand-050);
+  color: var(--brand-700);
+}
+
+.topicName {
+  display: block;
+  margin-top: 10px;
+  font-size: 17px;
+  line-height: 1.35;
+  color: var(--ink);
+  font-weight: 500;
+  max-width: 12ch;
+}
+
+.methods {
+  position: relative;
+  z-index: 1;
+  margin-top: 48px;
+}
+
+.methods ul {
+  margin-top: 22px;
+  /* A fixed three-column grid rather than free wrapping: the dividers then
+     fall in predictable places and no row ever starts with a stray rule. */
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  row-gap: 20px;
+}
+
+.methods li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  /* Generous padding so each rule sits clear of the mark beside it. */
+  padding: 4px 32px;
+  font-size: 15.5px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  border-left: 1px solid var(--line);
+}
+
+.methods li:nth-child(3n + 1) {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.methodIcon {
+  flex: none;
+  color: var(--brand-700);
+}
+
+.explore {
+  position: relative;
+  z-index: 1;
+  margin-top: 44px;
+}
+
+/* ---------- publications ------------------------------------------------ */
+
+.filterBar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding-top: 34px;
+}
+
+.filterBar :global(.tabs) {
+  flex: 1 1 auto;
+  border-bottom: 0;
+}
+
+.count {
+  margin-left: 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted-light);
+  vertical-align: 2px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search svg {
+  position: absolute;
+  left: 12px;
+  color: var(--muted-light);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 300px;
+  padding: 10px 15px 10px 38px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--bg-pure);
+  font-size: 15px;
+  transition: border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.searchInput::placeholder {
+  color: var(--muted-light);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--brand-400);
+  box-shadow: 0 0 0 3px var(--brand-050);
+}
+
+.searchInput::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+.selectWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.selectWrap svg {
+  position: absolute;
+  right: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 164px;
+  padding: 10px 36px 10px 15px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--bg-pure);
+  font-size: 15px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--brand-400);
+  box-shadow: 0 0 0 3px var(--brand-050);
+}
+
+.resultCount {
+  position: relative;
+  z-index: 1;
+  margin-top: 24px;
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+  color: var(--muted-light);
+}
+
+/* Publications are cards on a grid rather than a bibliography column
+   (change requirements §5). A `featured` card spans the full width. */
+.pubList {
+  position: relative;
+  z-index: 1;
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 22px;
+  align-items: stretch;
+}
+
+@media (max-width: 460px) {
+  .pubList {
+    grid-template-columns: 1fr;
+  }
+}
+
+.empty {
+  grid-column: 1 / -1;
+  padding: 54px 4px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.reset {
+  color: var(--brand-700);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- grants ------------------------------------------------------ */
+
+.grantList {
+  position: relative;
+  z-index: 1;
+  margin-top: 44px;
+  border-top: 1px solid var(--line);
+}
+
+.grant {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(240px, 0.9fr);
+  gap: 40px;
+  padding: 30px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.grantMain h4 {
+  font-size: 18.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.grantAgency {
+  margin-top: 9px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 62ch;
+}
+
+.grantRef {
+  margin-top: 7px;
+  font-size: 14px;
+  color: var(--muted-light);
+}
+
+.grantMeta {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.grantMeta div {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.grantMeta dt {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+}
+
+.grantMeta dd {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
+.grantRole {
+  color: var(--brand-700) !important;
+  font-weight: 600;
+}
+
+.prepBlock {
+  position: relative;
+  z-index: 1;
+  margin-top: 54px;
+  padding: 34px 36px;
+  background: var(--bg-tint);
+  border-left: 2px solid var(--accent-500);
+  border-radius: 0 4px 4px 0;
+}
+
+.prepList {
+  margin-top: 22px;
+  display: grid;
+  gap: 24px;
+}
+
+.prepList h4 {
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.prepList p {
+  margin-top: 6px;
+  font-size: 14.5px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.prepMeta {
+  color: var(--brand-700) !important;
+  font-weight: 600;
+}
+
+/* ---------- awards ------------------------------------------------------ */
+
+.awardList {
+  position: relative;
+  z-index: 1;
+  margin-top: 44px;
+  border-top: 1px solid var(--line);
+}
+
+.awardList li {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 34px;
+  gap: 26px;
+  align-items: start;
+  padding: 24px 4px;
+  border-bottom: 1px solid var(--line-soft);
+  transition: background var(--dur) var(--ease);
+}
+
+.awardList li:hover {
+  background: var(--bg-warm);
+}
+
+.awardYear {
+  font-family: var(--font-serif);
+  font-size: 17.5px;
+  color: var(--brand-700);
+  line-height: 1.5;
+}
+
+.awardBody strong {
+  display: block;
+  font-size: 17.5px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.awardBody em {
+  display: block;
+  margin-top: 5px;
+  font-style: normal;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+
+.awardNote {
+  display: block;
+  margin-top: 7px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 68ch;
+}
+
+.awardIcon {
+  color: var(--accent-500);
+  justify-self: end;
+  padding-top: 3px;
+}
+
+/* ---------- responsive -------------------------------------------------- */
+
+@media (max-width: 1080px) {
+  .topics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .topics li:nth-child(3) {
+    border-right: 0;
+  }
+  .topics li:nth-child(n + 4) {
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 900px) {
+  .methods ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .methods li:nth-child(3n + 1) {
+    padding-left: 32px;
+    border-left: 1px solid var(--line);
+  }
+  .methods li:nth-child(2n + 1) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .panelTabs {
+    grid-template-columns: 1fr 1fr;
+  }
+  .panelTab:nth-child(2n) {
+    border-right: 0;
+  }
+  .panelTab:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+  /* Odd count: the last tab runs the full width. */
+  .panelTab:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    border-right: 0;
+  }
+  .researchPanel {
+    padding-top: 44px;
+  }
+  .grant {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .awardList li {
+    grid-template-columns: minmax(0, 1fr) 30px;
+    gap: 10px 18px;
+  }
+  .awardYear {
+    grid-column: 1;
+    font-size: 14px;
+  }
+  .awardBody {
+    grid-column: 1;
+  }
+  .awardIcon {
+    grid-row: 1;
+    grid-column: 2;
+  }
+  .controls {
+    width: 100%;
+  }
+  .search {
+    flex: 1;
+  }
+  .searchInput {
+    width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .topics {
+    grid-template-columns: 1fr 1fr;
+  }
+  .topics li {
+    padding: 22px 18px 22px 0;
+  }
+  .topics li:nth-child(2n) {
+    border-right: 0;
+  }
+  .topics li:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+  .topicNum {
+    font-size: 32px;
+  }
+  .topicName {
+    font-size: 15px;
+  }
+  .methods ul {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+  .methods li {
+    padding: 2px 0;
+    gap: 12px;
+    border-left: 0;
+  }
+  .panelTabs {
+    grid-template-columns: 1fr;
+  }
+  .panelTab {
+    justify-content: flex-start;
+    border-right: 0;
+    border-top: 1px solid var(--line);
+    padding: 15px 18px;
+  }
+  .panelTab:first-child {
+    border-top: 0;
+  }
+  .panelTabActive::after {
+    top: 0;
+    bottom: 0;
+    right: auto;
+    width: 2px;
+    height: auto;
+  }
+  .prepBlock {
+    padding: 26px 22px;
+  }
+  .grantMeta div {
+    grid-template-columns: 66px 1fr;
+  }
+}
+
+
+/* --------- narrow screens: filters stack, nothing gets truncated -------- */
+@media (max-width: 620px) {
+  .filterBar {
+    gap: 18px;
+  }
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    padding-bottom: 0;
+  }
+  .search,
+  .selectWrap {
+    width: 100%;
+  }
+  .searchInput,
+  .select {
+    width: 100%;
+  }
+  .grantMeta div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .prepBlock {
+    padding: 22px 18px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse), (max-width: 1080px) {
+  .panelTab {
+    min-height: 52px;
+  }
+  .searchInput,
+  .select {
+    min-height: 48px;
+  }
+  .reset {
+    display: inline-block;
+    min-height: 44px;
+  }
+}

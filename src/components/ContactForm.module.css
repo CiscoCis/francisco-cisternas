@@ -1,0 +1,75 @@
+.form {
+  display: block;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 25px;
+  color: var(--brand-900);
+}
+
+.blurb {
+  margin: 10px 0 24px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.optional {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+}
+
+/* Honeypot. Hidden without display:none so bots still find and fill it. */
+.trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.selectWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.selectWrap select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.selectWrap svg {
+  position: absolute;
+  right: 13px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 118px;
+  line-height: 1.6;
+}
+
+.note {
+  margin-top: 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.note a {
+  color: var(--brand-700);
+}

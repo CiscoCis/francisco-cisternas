@@ -1,0 +1,243 @@
+.tabs {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 1px;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 16px 28px;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: var(--bg-pure);
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.tab svg {
+  opacity: 0.7;
+}
+
+.tab:hover {
+  color: var(--brand-700);
+  border-color: var(--brand-100);
+}
+
+.tabActive {
+  background: var(--brand-800);
+  border-color: var(--brand-800);
+  color: #fff;
+  font-weight: 600;
+}
+
+.tabActive svg {
+  opacity: 1;
+}
+
+.tabActive:hover {
+  color: #fff;
+  border-color: var(--brand-800);
+}
+
+.panel {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-pure);
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.list {
+  display: grid;
+}
+
+/* No bullets. The rows are separated by a hairline and by the role sitting
+   in its own column — a dot in front of every line was noise. */
+.list li {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
+  gap: 24px;
+  align-items: baseline;
+  padding: 20px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+/* On hover a single copper hairline draws in along the row's left edge,
+   which marks the row without filling it. */
+.list li::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 18px;
+  bottom: 18px;
+  width: 1px;
+  background: var(--red);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.list li:hover::before {
+  transform: scaleY(1);
+}
+
+.role {
+  font-family: var(--font-serif);
+  font-size: 19.5px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.detail {
+  position: relative;
+  padding-left: 24px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.detail::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 1px;
+  background: var(--line);
+}
+
+.sub {
+  margin-top: 46px;
+  padding: 30px 34px 8px;
+  background: var(--bg-tint);
+  border-radius: 4px;
+}
+
+.subHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 12px;
+}
+
+.subHead h3 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--brand-800);
+}
+
+.sub .list li:last-child {
+  border-bottom: 0;
+}
+
+.quote {
+  position: relative;
+  z-index: 1;
+  margin: 62px 0 0;
+  padding: 34px 0 0;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+
+
+/* Closing mark — the same glyph rotated, so the pair matches exactly. */
+
+
+.mark {
+  color: var(--accent-500);
+  font-family: var(--font-serif);
+}
+
+.quote p {
+  margin-inline: auto;
+  font-family: var(--font-serif);
+  font-size: clamp(21px, 2.1vw, 27px);
+  line-height: 1.45;
+  color: var(--brand-800);
+  max-width: 46ch;
+}
+
+@media (max-width: 900px) {
+  .list li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 18px 2px;
+  }
+  .detail {
+    grid-column: 1;
+    padding-left: 0;
+  }
+  .detail::before {
+    display: none;
+  }
+  .role {
+    font-size: 16.5px;
+  }
+  .sub {
+    padding: 24px 20px 4px;
+  }
+  .tab {
+    padding: 13px 18px;
+    font-size: 13.5px;
+  }
+}
+
+
+@media (hover: none) and (pointer: coarse), (max-width: 1080px) {
+  .tab {
+    min-height: 50px;
+  }
+}
+
+@media (max-width: 520px) {
+  .tab {
+    padding: 13px 16px;
+    font-size: 14.5px;
+  }
+  .role {
+    font-size: 17px;
+  }
+  .quote {
+    margin-top: 44px;
+    padding-top: 28px;
+  }
+}
+
+/* Decorative triangle field behind the section content. */
+.tri {
+  position: absolute;
+  bottom: -8%;
+  right: -12%;
+  width: 38%;
+  max-width: 540px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .tri {
+    width: 84%;
+    right: -26%;
+    opacity: 0.7;
+  }
+}

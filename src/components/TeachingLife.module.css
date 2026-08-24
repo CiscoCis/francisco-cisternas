@@ -1,0 +1,149 @@
+.wrap {
+  margin-top: 72px;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  margin-bottom: 34px;
+}
+
+.title {
+  color: var(--brand-900);
+}
+
+.lede {
+  margin-top: 12px;
+  font-size: 16.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  max-width: 56ch;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 26px;
+  align-items: start;
+}
+
+.item {
+  min-width: 0;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: linear-gradient(
+    150deg,
+    var(--brand-050) 0%,
+    var(--bg-tint) 60%,
+    var(--accent-100) 100%
+  );
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.glyph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent-500);
+  opacity: 0.42;
+}
+
+.glyph svg {
+  width: 84px;
+  height: 84px;
+  stroke-width: 0.9;
+}
+
+.body {
+  padding: 24px 26px 26px;
+}
+
+.storyTitle {
+  margin-top: 14px;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  line-height: 1.25;
+  color: var(--brand-900);
+}
+
+.summary {
+  margin-top: 11px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+.draft {
+  margin-top: 16px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 20px;
+  padding: 9px 16px;
+  border: 1px solid var(--brand-200);
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--brand-700);
+  transition: background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.toggle:hover {
+  background: var(--brand-050);
+  border-color: var(--brand-400);
+}
+
+.story {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--ink);
+  animation: storyIn 260ms var(--ease) both;
+}
+
+.story p + p {
+  margin-top: 14px;
+}
+
+@keyframes storyIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (hover: none) and (pointer: coarse), (max-width: 1080px) {
+  .toggle {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 620px) {
+  .head {
+    gap: 16px;
+  }
+  .body {
+    padding: 20px 20px 22px;
+  }
+}

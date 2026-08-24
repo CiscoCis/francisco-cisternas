@@ -1,0 +1,85 @@
+name: Deploy to GitHub Pages
+
+# Builds the site and publishes it whenever you push to main.
+#
+# One-time setup in the repository:
+#   Settings → Pages → Build and deployment → Source: "GitHub Actions"
+#
+# BASE_PATH is worked out automatically:
+#   • repo named <user>.github.io      → served at the root, no base path
+#   • any other repo name              → served at /<repo>/, base path set
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Work out the base path and site URL
+        id: base
+        run: |
+          REPO="${GITHUB_REPOSITORY#*/}"
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          if [ "$REPO" = "${OWNER,,}.github.io" ]; then
+            echo "path=" >> "$GITHUB_OUTPUT"
+            echo "url=https://${OWNER,,}.github.io" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=/$REPO" >> "$GITHUB_OUTPUT"
+            echo "url=https://${OWNER,,}.github.io/$REPO" >> "$GITHUB_OUTPUT"
+          fi
+
+      # A custom domain wins: set a repository variable SITE_URL
+      # (Settings -> Secrets and variables -> Actions -> Variables)
+      # to e.g. https://franciscocisternas.com
+
+      - run: npm ci
+
+      # NEXT_PUBLIC_CONTACT_ENDPOINT is the Google Apps Script Web App URL
+      # that receives contact-form submissions and writes them to the
+      # Google Sheet. Add it under
+      #   Settings -> Secrets and variables -> Actions -> Variables
+      # as CONTACT_ENDPOINT. Until it is set, the deployed form falls back
+      # to opening the visitor's own mail client and says so on the page.
+      # Setup instructions: scripts/google-sheets-endpoint.gs
+      - run: npm run build
+        env:
+          BASE_PATH: ${{ vars.SITE_URL && '' || steps.base.outputs.path }}
+          SITE_URL: ${{ vars.SITE_URL || steps.base.outputs.url }}
+          NEXT_PUBLIC_CONTACT_ENDPOINT: ${{ vars.CONTACT_ENDPOINT }}
+
+      # Stops GitHub Pages running the output through Jekyll, which would
+      # strip the _next/ directory and break every stylesheet and script.
+      - run: touch out/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

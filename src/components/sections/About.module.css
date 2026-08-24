@@ -1,0 +1,238 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 76px;
+  align-items: start;
+}
+
+.bio {
+  margin-top: 26px;
+  font-size: 17.5px;
+  line-height: 1.78;
+  white-space: pre-line;
+  color: var(--ink-soft);
+  max-width: 62ch;
+}
+
+.rolesLabel {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-600);
+  margin-bottom: 14px;
+}
+
+.positions {
+  display: grid;
+  gap: 10px;
+}
+
+.positions li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 16px;
+  color: var(--brand-800);
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.dot {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-500);
+  transform: translateY(-2px);
+}
+
+.profileLink {
+  margin-top: 24px;
+}
+
+.side .positions {
+  margin-top: 26px;
+}
+
+.cv {
+  margin-top: 34px;
+}
+
+.cvRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ---------- career journey ---------------------------------------------- */
+
+.journeyWrap {
+  margin-top: 72px;
+}
+
+.journeyRel {
+  position: relative;
+  margin-top: 44px;
+}
+
+.journey {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 34px;
+}
+
+/* The connecting line, drawn behind the markers. A real element rather
+   than a pseudo-element so the reveal can animate it. */
+.rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 15px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--blue),
+    var(--cyan) 52%,
+    var(--teal) 88%,
+    rgba(14, 159, 154, 0)
+  );
+}
+
+.journey li {
+  position: relative;
+  padding-top: 52px;
+  min-width: 0;
+}
+
+/* Each stop is a small solid triangle sitting on the rail, taking its
+   colour from that stop's `--stop`. */
+.marker {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid var(--stop, var(--blue));
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.journey li:hover .marker {
+  transform: translateY(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey li:hover .marker {
+    transform: none;
+  }
+}
+
+.period {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.place {
+  margin-top: 8px;
+  font-family: var(--font-serif);
+  font-size: clamp(20px, 1.7vw, 25px);
+  line-height: 1.2;
+  color: var(--brand-900);
+}
+
+.where {
+  margin-top: 6px;
+  font-size: 14.5px;
+  color: var(--accent-600);
+  font-weight: 600;
+}
+
+.note {
+  margin-top: 12px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 40ch;
+}
+
+/* ---------- responsive -------------------------------------------------- */
+
+@media (max-width: 1080px) {
+  .grid {
+    gap: 48px;
+  }
+  .journey {
+    gap: 26px;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 46px;
+  }
+  .journeyWrap {
+    margin-top: 56px;
+  }
+  .journey {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  /* Vertical rail on narrow screens. */
+  .rail {
+    left: 15px;
+    right: auto;
+    top: 8px;
+    bottom: 24px;
+    width: 1px;
+    height: auto;
+    transform-origin: top;
+    background: linear-gradient(
+      to bottom,
+      var(--blue),
+      var(--cyan) 52%,
+      var(--teal) 88%,
+      rgba(14, 159, 154, 0)
+    );
+  }
+  .journey li {
+    padding: 0 0 34px 54px;
+  }
+  .marker {
+    top: 4px;
+    left: 8px;
+  }
+  .journey li:last-child {
+    padding-bottom: 0;
+  }
+  .note {
+    max-width: none;
+  }
+}
+
+/* Decorative triangle, sitting behind the About content on the right. */
+.tri {
+  position: absolute;
+  top: -6%;
+  right: -10%;
+  width: 46%;
+  max-width: 640px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .tri {
+    width: 88%;
+    right: -22%;
+    top: auto;
+    bottom: -4%;
+    opacity: 0.75;
+  }
+}

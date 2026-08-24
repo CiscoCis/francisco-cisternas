@@ -1,0 +1,341 @@
+.section {
+  position: relative;
+  overflow: hidden;
+}
+
+.network {
+  position: absolute;
+  top: -60px;
+  right: -4%;
+  width: 58%;
+  max-width: 840px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+  z-index: 2;
+}
+
+.head {
+  padding-bottom: 44px;
+}
+
+.head :global(.eyebrow) {
+  margin-bottom: 18px;
+}
+
+.lede {
+  margin-top: 22px;
+  font-size: 16.5px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  max-width: 34ch;
+}
+
+.portrait {
+  flex: none;
+  width: 178px;
+  height: 178px;
+  padding: 6px;
+  background: var(--bg-pure);
+  border-radius: 4px;
+  box-shadow: var(--shadow-md);
+}
+
+.portraitImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+/* ---------- controls ----------------------------------------------------- */
+
+.controlBar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 26px;
+  flex-wrap: wrap;
+}
+
+.controlBar :global(.tabs) {
+  flex: 1 1 auto;
+  border-bottom: 0;
+}
+
+.selectWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.selectWrap svg {
+  position: absolute;
+  right: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 164px;
+  padding: 10px 36px 10px 15px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--bg-pure);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--brand-400);
+  box-shadow: 0 0 0 3px var(--brand-050);
+}
+
+/* ---------- panel -------------------------------------------------------- */
+
+.panel {
+  margin-top: 26px;
+  padding: 14px 38px 30px;
+  background: var(--bg-pure);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.empty {
+  padding: 40px 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.yearBlock {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 20px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.yearBlock:last-child {
+  border-bottom: 0;
+}
+
+.yearCol {
+  padding-top: 2px;
+}
+
+.yearNum {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 28px;
+  color: var(--brand-800);
+  line-height: 1;
+}
+
+.yearRule {
+  display: block;
+  width: 26px;
+  height: 2px;
+  background: var(--accent-500);
+  margin-top: 10px;
+}
+
+.talkList {
+  display: grid;
+}
+
+.talkList li {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) 132px 250px;
+  gap: 18px;
+  align-items: baseline;
+  padding: 9px 0;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-500);
+  transform: translateY(-3px);
+}
+
+.talkEvent {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--brand-900);
+}
+
+.kind {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--brand-700);
+}
+
+.paper {
+  margin-top: 4px;
+  font-size: 14.5px;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.talkDate,
+.talkLoc {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* ---------- keynotes ----------------------------------------------------- */
+
+.keynoteList {
+  display: grid;
+}
+
+.keynoteList li {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 210px;
+  gap: 22px;
+  align-items: start;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.keynoteList li:last-child {
+  border-bottom: 0;
+}
+
+.keynoteList h3 {
+  font-size: 17.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--brand-900);
+}
+
+.kContext {
+  margin-top: 7px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.kMeta {
+  display: grid;
+  gap: 3px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* ---------- responsive --------------------------------------------------- */
+
+@media (max-width: 1080px) {
+  .talkList li {
+    grid-template-columns: 14px minmax(0, 1fr) 118px 190px;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .head {
+    padding-bottom: 34px;
+  }
+  .portrait {
+    width: 128px;
+    height: 128px;
+  }
+  .network {
+    width: 100%;
+    right: -22%;
+    opacity: 0.6;
+  }
+  .panel {
+    padding: 8px 20px 20px;
+  }
+  .yearBlock {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .yearCol {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .yearRule {
+    margin-top: 0;
+    flex: 1;
+  }
+  .talkList li {
+    grid-template-columns: 14px minmax(0, 1fr);
+    gap: 4px 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .talkList li:last-child {
+    border-bottom: 0;
+  }
+  .talkDate,
+  .talkLoc {
+    grid-column: 2;
+  }
+  .talkDate {
+    margin-top: 5px;
+    color: var(--brand-700);
+    font-weight: 600;
+  }
+  .keynoteList li {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 8px 18px;
+  }
+  .kMeta {
+    grid-column: 2;
+    text-align: left;
+  }
+  .controlBar :global(.tab) {
+    font-size: 13.5px;
+  }
+}
+
+
+@media (hover: none) and (pointer: coarse), (max-width: 1080px) {
+  .select {
+    min-height: 48px;
+  }
+}
+
+@media (max-width: 620px) {
+  .controlBar {
+    gap: 14px;
+  }
+  .selectWrap {
+    width: 100%;
+    padding-bottom: 0;
+  }
+  .select {
+    width: 100%;
+  }
+  .panel {
+    padding: 6px 16px 18px;
+  }
+  .yearNum {
+    font-size: 24px;
+  }
+}
+
+/* Reduced-prominence controls (change requirements §12). */
+.moreWrap {
+  margin-top: 28px;
+}
+
+.moreWrap button svg {
+  transform: rotate(0deg);
+}

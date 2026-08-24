@@ -1,0 +1,70 @@
+.wrap {
+  position: relative;
+  z-index: 0;
+  padding-bottom: 52px;
+}
+
+.inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.textCol {
+  max-width: 640px;
+}
+
+.ruleAbove {
+  display: block;
+  width: 52px;
+  height: 1px;
+  background: var(--red);
+  margin-bottom: 22px;
+}
+
+.textCol .eyebrow {
+  margin-bottom: 16px;
+}
+
+.lede {
+  margin-top: 22px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  max-width: 46ch;
+}
+
+.aside {
+  flex: none;
+  position: relative;
+  z-index: 3;
+}
+
+.network {
+  position: absolute;
+  top: -78px;
+  right: -6%;
+  width: 54%;
+  max-width: 720px;
+  aspect-ratio: 900 / 620;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .network {
+    width: 92%;
+    right: -18%;
+    top: -50px;
+    opacity: 0.7;
+  }
+  .inner {
+    flex-direction: column;
+  }
+  .wrap {
+    padding-bottom: 38px;
+  }
+}

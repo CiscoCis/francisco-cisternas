@@ -1,0 +1,67 @@
+.wrap {
+  position: relative;
+}
+
+.track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.track:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.navBtn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--bg-pure);
+  color: var(--ink);
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.navBtn:hover:not(:disabled) {
+  color: var(--blue);
+  border-color: var(--blue-200);
+}
+
+.navBtn:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.prevIcon {
+  transform: rotate(90deg);
+}
+
+.nextIcon {
+  transform: rotate(-90deg);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .controls {
+    display: none;
+  }
+}
