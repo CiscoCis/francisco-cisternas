@@ -4,6 +4,9 @@ import { profile } from '@/data/profile';
 import { buildNav } from '@/data/nav';
 import { hasMedia } from '@/lib/content/media';
 import { getMediaItems } from '@/lib/content/media.server';
+import { hasVideos } from '@/lib/content/videos';
+import { getVisibleVideos } from '@/lib/content/videos.server';
+import { getSectionOrder } from '@/lib/content/siteSettings.server';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import './globals.css';
@@ -153,7 +156,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const nav = buildNav(hasMedia(getMediaItems()));
+  const nav = buildNav(
+    getSectionOrder(),
+    hasMedia(getMediaItems()),
+    hasVideos(getVisibleVideos())
+  );
 
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>

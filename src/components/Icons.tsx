@@ -76,7 +76,8 @@ export type IconName =
   | 'compass'
   | 'tag'
   | 'plus'
-  | 'minus';
+  | 'minus'
+  | 'play';
 
 /** Bare geometry (no <svg> wrapper) so it can be embedded in another SVG. */
 export function NetworkIcon({ name }: { name: NetworkIconName }) {
@@ -552,6 +553,14 @@ const PATHS: Record<IconName, React.ReactNode> = {
 
   plus: <path d="M12 5.2v13.6M5.2 12h13.6" />,
   minus: <path d="M5.2 12h13.6" />,
+
+  /* Video play — a filled triangle in a ring, standard "play" shape. */
+  play: (
+    <>
+      <circle cx="12" cy="12" r="9.2" />
+      <path d="M10 8.2v7.6l6.2-3.8Z" fill="currentColor" stroke="none" />
+    </>
+  ),
 };
 
 interface IconProps extends SVGProps<SVGSVGElement> {
