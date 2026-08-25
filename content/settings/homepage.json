@@ -1,13 +1,31 @@
 {
   "sectionOrder": [
-    { "section": "about" },
-    { "section": "research" },
-    { "section": "teaching" },
-    { "section": "service" },
-    { "section": "media" },
-    { "section": "videos" },
-    { "section": "writing" },
-    { "section": "beyond" },
-    { "section": "contact" }
+    {
+      "section": "research"
+    },
+    {
+      "section": "teaching"
+    },
+    {
+      "section": "about"
+    },
+    {
+      "section": "service"
+    },
+    {
+      "section": "media"
+    },
+    {
+      "section": "videos"
+    },
+    {
+      "section": "writing"
+    },
+    {
+      "section": "beyond"
+    },
+    {
+      "section": "contact"
+    }
   ]
 }
