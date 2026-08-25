@@ -1,13 +1,13 @@
 {
   "sectionOrder": [
-    "about",
-    "research",
-    "teaching",
-    "service",
-    "media",
-    "videos",
-    "writing",
-    "beyond",
-    "contact"
+    { "section": "about" },
+    { "section": "research" },
+    { "section": "teaching" },
+    { "section": "service" },
+    { "section": "media" },
+    { "section": "videos" },
+    { "section": "writing" },
+    { "section": "beyond" },
+    { "section": "contact" }
   ]
 }

@@ -7,7 +7,11 @@ import type { SectionKey } from './siteSettings';
 import { DEFAULT_SECTION_ORDER } from './siteSettings';
 
 interface RawSiteSettings {
-  sectionOrder?: (string | null)[] | null;
+  // Each entry is a one-field object ({ section: 'about' }), not a bare
+  // string — see the comment in tina/config.ts: only an *object* list gets
+  // Tina's drag-to-reorder UI, a plain string list with `options` renders
+  // as fixed checkboxes instead.
+  sectionOrder?: ({ section?: string | null } | null)[] | null;
 }
 
 const KNOWN: readonly string[] = DEFAULT_SECTION_ORDER;
@@ -22,7 +26,9 @@ const KNOWN: readonly string[] = DEFAULT_SECTION_ORDER;
  */
 export function getSectionOrder(): SectionKey[] {
   const docs = readCollection<RawSiteSettings>('settings');
-  const stored = (docs[0]?.data.sectionOrder ?? []).filter((s): s is string => !!s);
+  const stored = (docs[0]?.data.sectionOrder ?? [])
+    .map((entry) => entry?.section)
+    .filter((s): s is string => !!s);
 
   const seen = new Set<string>();
   const cleaned: SectionKey[] = [];

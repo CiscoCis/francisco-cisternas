@@ -13,6 +13,18 @@ import { defineConfig } from 'tinacms';
  * none of them set.
  */
 
+const SECTION_LABELS: Record<string, string> = {
+  about: 'About',
+  research: 'Research & Publications',
+  teaching: 'Teaching',
+  service: 'Service',
+  media: 'Media & Stories',
+  videos: 'Videos',
+  writing: 'Blog',
+  beyond: 'Beyond Work',
+  contact: 'Contact',
+};
+
 const blogBlockTemplates = [
   {
     name: 'p',
@@ -376,20 +388,39 @@ export default defineConfig({
         ui: { global: true },
         fields: [
           {
-            type: 'string',
+            // A plain string list with `options` renders as a fixed set of
+            // checkboxes in Tina's admin, with no way to reorder them.
+            // Only an *object* list gets drag handles (the same "Add,
+            // drag, delete" row UI already used for Service items and
+            // Blog body blocks) — so each entry is a one-field object
+            // rather than a bare string, purely to get that UI.
+            type: 'object',
             name: 'sectionOrder',
-            label: 'Homepage section order (drag to reorder)',
+            label: 'Homepage sections (drag rows to reorder)',
             list: true,
-            options: [
-              { value: 'about', label: 'About' },
-              { value: 'research', label: 'Research & Publications' },
-              { value: 'teaching', label: 'Teaching' },
-              { value: 'service', label: 'Service' },
-              { value: 'media', label: 'Media & Stories' },
-              { value: 'videos', label: 'Videos' },
-              { value: 'writing', label: 'Blog' },
-              { value: 'beyond', label: 'Beyond Work' },
-              { value: 'contact', label: 'Contact' },
+            ui: {
+              itemProps: (item: { section?: string }) => ({
+                label: (item?.section && SECTION_LABELS[item.section]) || 'Section',
+              }),
+            },
+            fields: [
+              {
+                type: 'string',
+                name: 'section',
+                label: 'Section',
+                required: true,
+                options: [
+                  { value: 'about', label: 'About' },
+                  { value: 'research', label: 'Research & Publications' },
+                  { value: 'teaching', label: 'Teaching' },
+                  { value: 'service', label: 'Service' },
+                  { value: 'media', label: 'Media & Stories' },
+                  { value: 'videos', label: 'Videos' },
+                  { value: 'writing', label: 'Blog' },
+                  { value: 'beyond', label: 'Beyond Work' },
+                  { value: 'contact', label: 'Contact' },
+                ],
+              },
             ],
           },
         ],
