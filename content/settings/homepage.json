@@ -1,13 +1,13 @@
 {
   "sectionOrder": [
     {
+      "section": "about"
+    },
+    {
       "section": "research"
     },
     {
       "section": "teaching"
-    },
-    {
-      "section": "about"
     },
     {
       "section": "service"
