@@ -13,6 +13,13 @@ import styles from './Header.module.css';
 // route, so nav links have to work from both: on the home page they scroll,
 // from anywhere else they navigate to /#section and let the browser do the
 // rest.
+//
+// window.history.replaceState() bypasses next/link's routing entirely, so
+// unlike a <Link>, it never gets `basePath` prefixed automatically — every
+// raw path built here has to include it by hand, or a refresh on a GitHub
+// Pages project site (served under /<repo>/, not the domain root) 404s.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+const HOME_URL = `${BASE_PATH}/`;
 
 export default function Header({ nav }: { nav: NavItem[] }) {
   const pathname = usePathname();
@@ -64,7 +71,7 @@ export default function Header({ nav }: { nav: NavItem[] }) {
       // inside the updater would update the Router while Header renders.
       if (current !== lastRef.current) {
         lastRef.current = current;
-        const url = current === 'home' ? '/' : `#${current}`;
+        const url = current === 'home' ? HOME_URL : `#${current}`;
         if (window.location.hash !== url) {
           window.history.replaceState(null, '', url);
         }
@@ -122,12 +129,12 @@ export default function Header({ nav }: { nav: NavItem[] }) {
           )
         ) || 82);
       window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
-      window.history.replaceState(null, '', id === 'home' ? '/' : `#${id}`);
+      window.history.replaceState(null, '', id === 'home' ? HOME_URL : `#${id}`);
     },
     [isHome]
   );
 
-  const href = (id: string) => (isHome ? `#${id}` : `/#${id}`);
+  const href = (id: string) => (isHome ? `#${id}` : `${BASE_PATH}/#${id}`);
 
   // Split on the first space so the wordmark can carry a two-colour hover
   // treatment without hardcoding the name.

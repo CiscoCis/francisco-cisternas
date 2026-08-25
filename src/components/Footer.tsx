@@ -6,6 +6,13 @@ import styles from './Footer.module.css';
 
 // Only verified information appears — no social accounts have been
 // supplied, so none are fabricated.
+//
+// A plain <a> (unlike next/link) never gets `basePath` prefixed
+// automatically, so this has to be added by hand — otherwise these links
+// send a visitor on a GitHub Pages project site (served under /<repo>/)
+// to the bare domain root, which 404s.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+
 export default function Footer({ nav }: { nav: NavItem[] }) {
   // Static export: keep this deterministic, update on rebuild.
   const year = 2026;
@@ -17,7 +24,7 @@ export default function Footer({ nav }: { nav: NavItem[] }) {
           <ul>
             {nav.map((item) => (
               <li key={item.id}>
-                <a href={`/#${item.id}`}>{item.label}</a>
+                <a href={`${BASE_PATH}/#${item.id}`}>{item.label}</a>
               </li>
             ))}
             <li>
