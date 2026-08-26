@@ -11,7 +11,14 @@ export interface Video {
   description?: string;
   url: string;
   thumbnail?: string;
+  category?: string;
   date?: string;
+}
+
+/** Best-effort leading 4-digit year out of a free-text date like "Spring 2026" — null if none found. */
+export function yearFromDate(date?: string): number | null {
+  const match = date?.match(/\b(19|20)\d{2}\b/);
+  return match ? Number(match[0]) : null;
 }
 
 export type VideoEmbed =

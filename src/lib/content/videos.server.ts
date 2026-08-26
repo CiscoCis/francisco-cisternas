@@ -9,6 +9,7 @@ interface RawVideo {
   description?: string | null;
   url: string;
   thumbnail?: string | null;
+  category?: string | null;
   date?: string | null;
   draft?: boolean | null;
 }
@@ -25,6 +26,7 @@ export function getVisibleVideos(): Video[] {
       description: data.description ?? undefined,
       url: data.url,
       thumbnail: data.thumbnail ?? undefined,
+      category: data.category ?? undefined,
       date: data.date ?? undefined,
     }));
 }

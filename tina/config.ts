@@ -363,6 +363,12 @@ export default defineConfig({
             label: "Custom thumbnail (optional — otherwise uses YouTube/Vimeo's own)",
             uploadDir: () => 'videos',
           },
+          {
+            type: 'string',
+            name: 'category',
+            label: 'Category (optional — lets visitors filter the list)',
+            options: ['Lecture', 'Keynote', 'Interview', 'Conference Talk', 'Course Clip', 'Panel Discussion'],
+          },
           { type: 'string', name: 'date', label: 'Date (optional, e.g. "2026")' },
           { type: 'boolean', name: 'draft', label: 'Draft (hidden from the live site)' },
         ],
