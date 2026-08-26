@@ -298,12 +298,32 @@
   background: var(--brand-900);
 }
 
-.modalIframe {
+.modalFrame iframe {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+/* Directly under the player rather than only in the modal's footer, so
+   there's an immediately visible way out for a talk that won't embed
+   (TEDx in particular routinely blocks third-party embedding) without
+   the visitor needing to notice a button further down. */
+.modalHint {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.modalHint a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--brand-700);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .modalDesc {

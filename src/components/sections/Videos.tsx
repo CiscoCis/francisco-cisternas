@@ -24,11 +24,17 @@ import styles from './Videos.module.css';
  * doesn't scale once there's more than a handful of talks.
  *
  * Playback opens in the site's shared Modal rather than swapping the
- * thumbnail in place: some uploaders (TEDx talks in particular) disable
- * third-party embedding entirely, which shows YouTube's own "Video
- * unavailable" message inside the iframe with no way out. The modal
- * always offers a "Watch on YouTube/Vimeo" link that opens the real page
- * in a new tab, so that's never a dead end.
+ * thumbnail in place. Some uploaders (TEDx talks in particular) disable
+ * third-party embedding entirely — a raw <iframe src="…/embed/ID"> still
+ * "loads" in that case, it just renders YouTube's own "Video unavailable"
+ * page inside itself. That page is YouTube's own client-side UI, not a
+ * network failure or a catchable error — it was confirmed, including
+ * against the real YouTube IFrame Player API's onError event, that
+ * nothing fires for this specific failure, so it can't be reliably
+ * detected from outside. Rather than pretend otherwise, the "Watch on
+ * YouTube/Vimeo" link sits directly under the player itself (not just in
+ * the modal's footer), so there's always an immediately visible way to
+ * actually watch a talk that won't embed, whether or not that shows up.
  */
 
 type SortOption = 'newest' | 'oldest';
@@ -120,16 +126,24 @@ function VideoModal({ video, embed, onClose }: { video: Video | null; embed: Vid
       }
     >
       {embed && (
-        <div className={styles.modalFrame}>
-          <iframe
-            key={embed.embedUrl}
-            src={`${embed.embedUrl}?autoplay=1`}
-            title={video?.title}
-            className={styles.modalIframe}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
+        <>
+          <div className={styles.modalFrame}>
+            <iframe
+              key={embed.embedUrl}
+              src={`${embed.embedUrl}?autoplay=1`}
+              title={video?.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          <p className={styles.modalHint}>
+            Video not playing?{' '}
+            <a href={video?.url} target="_blank" rel="noopener noreferrer">
+              Watch on {embed.provider === 'vimeo' ? 'Vimeo' : 'YouTube'} instead
+              <Icon name="external" size={13} />
+            </a>
+          </p>
+        </>
       )}
       {video?.description && <p className={styles.modalDesc}>{video.description}</p>}
     </Modal>
