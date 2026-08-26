@@ -769,7 +769,19 @@ export default function AnalyticsScreen({ endpoint, secret }: AnalyticsScreenPro
   const isLoading = summaryLoading && !summary;
 
   return (
-    <div style={{ background: COLORS.bg, minHeight: '100%', padding: 32 }}>
+    // Tina's own fullscreen-screen wrapper is `position: absolute; height:
+    // 100%; overflow: visible` inside an outer `overflow-y: auto` modal --
+    // because that wrapper's own box never grows past one viewport, content
+    // that overflows it via `overflow: visible` paints past its edge but
+    // never registers in the outer container's scroll range, so it's simply
+    // unreachable by scrolling, not just badly backgrounded. Fixed by making
+    // this div its own scroll container: `position: absolute; inset: 0`
+    // makes it fill that wrapper's fixed box exactly (its nearest
+    // positioned ancestor), and `overflow-y: auto` then correctly computes
+    // scroll range from its own (normal-flow) children, with its background
+    // covering the full scrollable area the way `overflow: auto` always
+    // does -- independent of whatever the ancestor chain does above it.
+    <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', background: COLORS.bg, padding: 32 }}>
       <style>{GLOBAL_STYLE}</style>
       <div style={{ maxWidth: 1180, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
