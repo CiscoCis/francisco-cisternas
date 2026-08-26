@@ -30,9 +30,10 @@
  *
  *  ── SETUP (about ten minutes, once) ─────────────────────────────────────
  *
- *   1. In GoatCounter (your <code>.goatcounter.com` site), go to
- *      Settings → API, and generate a new API token. Read-only access is
- *      enough. Copy it.
+ *   1. In GoatCounter, click your email/username in the top-right menu →
+ *      API (not under "Settings" — that page doesn't have it), then "Add
+ *      new API Token". Check "Read statistics" and "Export" only, and
+ *      scope it to this one site rather than "All sites". Copy the token.
  *
  *   2. Create a new, blank Google Sheet (any name, e.g. "Website
  *      Analytics"). This is separate from the "Website Communication"
@@ -127,7 +128,7 @@ function doGet(e) {
 
 function getSummary_() {
   var total = goatcounterGet_('/api/v0/stats/total');
-  var locations = goatcounterGet_('/api/v0/stats/location');
+  var locations = goatcounterGet_('/api/v0/stats/locations');
   var hits = goatcounterGet_('/api/v0/stats/hits?limit=10');
 
   return {
