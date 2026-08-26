@@ -177,7 +177,10 @@ function getRecent_() {
  * the trigger's execution log) rather than silently writing wrong data.
  */
 function refreshRecentVisits() {
-  var created = goatcounterPost_('/api/v0/export', {});
+  // GoatCounter's docs say `format` defaults to "csv" when omitted, but the
+  // live API actually treats a missing key as an empty string and rejects
+  // it ("unknown format") -- so it has to be sent explicitly.
+  var created = goatcounterPost_('/api/v0/export', { format: 'csv' });
   var exportId = created.id;
   if (!exportId) throw new Error('GoatCounter did not return an export id');
 
