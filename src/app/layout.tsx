@@ -9,6 +9,7 @@ import { getVisibleVideos } from '@/lib/content/videos.server';
 import { getSectionOrder } from '@/lib/content/siteSettings.server';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Analytics from '@/components/Analytics';
 import './globals.css';
 
 /*
@@ -171,6 +172,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <Analytics />
         <a className="skip-link" href="#main">
           Skip to main content
         </a>

@@ -66,6 +66,15 @@ jobs:
       # Tokens pages at app.tina.io. Until both are set, `build:tina`
       # fails; use `npm run build` instead, which skips the editor build
       # entirely and still deploys the rest of the site.
+
+      # GOATCOUNTER_CODE is the site code from goatcounter.com (Settings ->
+      # main); GA_MEASUREMENT_ID is the G-XXXXXXXXXX id from a GA4 property's
+      # Data Stream. Either can be added independently -- until set, that
+      # tracker just doesn't load (see src/components/Analytics.tsx).
+      # ANALYTICS_ENDPOINT/ANALYTICS_SECRET are the Apps Script Web App URL
+      # and shared secret the private TinaCMS "Analytics" screen reads from
+      # (scripts/analytics-dashboard-endpoint.gs) -- unrelated to the two
+      # trackers above.
       - run: npm run build:tina
         env:
           BASE_PATH: ${{ vars.SITE_URL && '' || steps.base.outputs.path }}
@@ -73,6 +82,10 @@ jobs:
           NEXT_PUBLIC_CONTACT_ENDPOINT: ${{ vars.CONTACT_ENDPOINT }}
           NEXT_PUBLIC_TINA_CLIENT_ID: ${{ vars.TINA_CLIENT_ID }}
           TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
+          NEXT_PUBLIC_GOATCOUNTER_CODE: ${{ vars.GOATCOUNTER_CODE }}
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
+          NEXT_PUBLIC_ANALYTICS_ENDPOINT: ${{ vars.ANALYTICS_ENDPOINT }}
+          NEXT_PUBLIC_ANALYTICS_SECRET: ${{ secrets.ANALYTICS_SECRET }}
 
       # Stops GitHub Pages running the output through Jekyll, which would
       # strip the _next/ directory and break every stylesheet and script.
