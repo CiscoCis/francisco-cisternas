@@ -31,6 +31,32 @@ const CATEGORIES: PublicationCategory[] = [
   'working',
 ];
 
+type SortOption = 'featured' | 'title-asc' | 'title-desc' | 'year-desc' | 'year-asc';
+
+const SORT_LABELS: Record<SortOption, string> = {
+  featured: 'Featured first',
+  'title-asc': 'Title (A–Z)',
+  'title-desc': 'Title (Z–A)',
+  'year-desc': 'Year (newest)',
+  'year-asc': 'Year (oldest)',
+};
+
+const SORT_OPTIONS: SortOption[] = [
+  'featured',
+  'title-asc',
+  'title-desc',
+  'year-desc',
+  'year-asc',
+];
+
+/** Publications with no year (mostly working papers) always sort last, whichever direction is picked. */
+function compareByYear(a: Publication, b: Publication, direction: 1 | -1): number {
+  if (a.year === null && b.year === null) return 0;
+  if (a.year === null) return 1;
+  if (b.year === null) return -1;
+  return (a.year - b.year) * direction;
+}
+
 const TOPIC_ICONS: IconName[] = ['mobile', 'database', 'chart', 'leaf', 'heart'];
 
 // One mark per methodology, in the same order as profile.methods.
@@ -64,6 +90,7 @@ export default function ResearchPublications({
   const [category, setCategory] = useState<PublicationCategory>('published');
   const [query, setQuery] = useState('');
   const [year, setYear] = useState<string>('all');
+  const [sort, setSort] = useState<SortOption>('featured');
 
   const years = useMemo(() => yearsFor(publications[category]), [publications, category]);
 
@@ -86,11 +113,28 @@ export default function ResearchPublications({
         .toLowerCase();
       return haystack.includes(q);
     });
-    /* Featured papers lead their category; the rest keep CV order. */
-    return [...matched].sort(
-      (a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))
-    );
-  }, [publications, category, query, year]);
+    const sorted = [...matched];
+    switch (sort) {
+      case 'title-asc':
+        sorted.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'title-desc':
+        sorted.sort((a, b) => b.title.localeCompare(a.title));
+        break;
+      case 'year-desc':
+        sorted.sort((a, b) => compareByYear(a, b, -1));
+        break;
+      case 'year-asc':
+        sorted.sort((a, b) => compareByYear(a, b, 1));
+        break;
+      default:
+        /* Featured papers lead their category; the rest keep CV order. */
+        sorted.sort(
+          (a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))
+        );
+    }
+    return sorted;
+  }, [publications, category, query, year, sort]);
 
   const changeCategory = (c: PublicationCategory) => {
     setCategory(c);
@@ -258,6 +302,26 @@ export default function ResearchPublications({
                     {years.map((y) => (
                       <option key={y} value={String(y)}>
                         {y}
+                      </option>
+                    ))}
+                  </select>
+                  <Icon name="chevron" size={15} aria-hidden="true" />
+                </div>
+
+                <div className={`${styles.selectWrap} ${styles.sortWrap}`}>
+                  <Icon name="sort" size={15} aria-hidden="true" />
+                  <label htmlFor="pub-sort" className="sr-only">
+                    Sort publications
+                  </label>
+                  <select
+                    id="pub-sort"
+                    className={styles.select}
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as SortOption)}
+                  >
+                    {SORT_OPTIONS.map((s) => (
+                      <option key={s} value={s}>
+                        {SORT_LABELS[s]}
                       </option>
                     ))}
                   </select>

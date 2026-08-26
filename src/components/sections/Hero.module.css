@@ -29,8 +29,6 @@
   position: relative;
   z-index: 2;
   align-self: end;
-  --bleed: max(var(--gutter), calc((100vw - var(--container)) / 2 + var(--gutter)));
-  margin-left: calc(-1 * var(--bleed));
 }
 
 .portrait {
@@ -297,7 +295,6 @@
   .photoCol {
     max-width: none;
     align-self: center;
-    margin-left: calc(-1 * var(--gutter));
   }
   .portrait {
     height: clamp(220px, 68vh, 320px);

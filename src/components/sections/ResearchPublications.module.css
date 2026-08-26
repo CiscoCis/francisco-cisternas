@@ -346,6 +346,23 @@
   cursor: pointer;
 }
 
+/* A second, leading icon marks this control as a sort (not just a plain
+   filter like Year) — the trailing chevron from .selectWrap still shows
+   the dropdown affordance. */
+.sortWrap {
+  position: relative;
+}
+
+.sortWrap > svg:first-child {
+  left: 12px;
+  right: auto;
+}
+
+.sortWrap .select {
+  width: 180px;
+  padding-left: 34px;
+}
+
 .select:focus {
   outline: none;
   border-color: var(--brand-400);

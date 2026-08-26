@@ -77,7 +77,8 @@ export type IconName =
   | 'tag'
   | 'plus'
   | 'minus'
-  | 'play';
+  | 'play'
+  | 'sort';
 
 /** Bare geometry (no <svg> wrapper) so it can be embedded in another SVG. */
 export function NetworkIcon({ name }: { name: NetworkIconName }) {
@@ -559,6 +560,14 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <circle cx="12" cy="12" r="9.2" />
       <path d="M10 8.2v7.6l6.2-3.8Z" fill="currentColor" stroke="none" />
+    </>
+  ),
+
+  /* Sort — two stacked arrows, one up one down. */
+  sort: (
+    <>
+      <path d="M7 4v16M7 4l-3.5 3.5M7 4l3.5 3.5" />
+      <path d="M17 20V4M17 20l-3.5-3.5M17 20l3.5-3.5" />
     </>
   ),
 };
