@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { COUNTRY_COORDS } from './countryCoords';
+import { WORLD_LAND_PATH } from './worldLandPath';
 
 /*
  * The "Analytics" screen inside TinaCMS (Settings sidebar → DASHBOARD →
@@ -422,11 +423,24 @@ function WorldMap({
           </filter>
         </defs>
 
-        <g stroke="#173254" strokeWidth={1} opacity={0.6}>
+        <g stroke="#173254" strokeWidth={1} opacity={0.45}>
           {gridLines}
         </g>
-        <line x1={0} y1={MAP_HEIGHT / 2} x2={MAP_WIDTH} y2={MAP_HEIGHT / 2} stroke="#2c5c8f" strokeWidth={1.5} opacity={0.7} />
-        <line x1={MAP_WIDTH / 2} y1={0} x2={MAP_WIDTH / 2} y2={MAP_HEIGHT} stroke="#2c5c8f" strokeWidth={1.5} opacity={0.7} />
+
+        {/* The actual continent outlines -- a simplified, public-domain
+            (Natural Earth) coastline, projected with the exact same
+            equirectangular math as project() above so it lines up with
+            every marker plotted on top of it. See worldLandPath.ts. */}
+        <path
+          d={WORLD_LAND_PATH}
+          fill="#12294a"
+          stroke="#2c5c8f"
+          strokeWidth={0.75}
+          opacity={0.9}
+        />
+
+        <line x1={0} y1={MAP_HEIGHT / 2} x2={MAP_WIDTH} y2={MAP_HEIGHT / 2} stroke="#2c5c8f" strokeWidth={1} opacity={0.35} />
+        <line x1={MAP_WIDTH / 2} y1={0} x2={MAP_WIDTH / 2} y2={MAP_HEIGHT} stroke="#2c5c8f" strokeWidth={1} opacity={0.35} />
 
         {points.map((p) => {
           const isActive = p.code === selected || p.code === hovered;
