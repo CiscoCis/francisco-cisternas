@@ -1,4 +1,34 @@
+import { createElement } from 'react';
 import { defineConfig } from 'tinacms';
+import type { ScreenPlugin } from 'tinacms';
+import AnalyticsScreen from './screens/AnalyticsScreen';
+
+// `createScreen` (Tina's own helper for building one of these) isn't
+// exported from the package, so the plugin object is built by hand
+// against the exported `ScreenPlugin` type instead -- confirmed valid by
+// reading node_modules/tinacms/dist/toolkit/react-screens/screen-plugin.d.ts,
+// and by the fact that Tina's own built-in "Media Usage" dashboard entry
+// (Settings sidebar → DASHBOARD) is built the exact same way internally.
+//
+// The analytics backend's URL and shared secret are read here (Tina's CLI
+// bundles tina/config.ts with its own tool, substituting process.env.*
+// the same way it already does for NEXT_PUBLIC_TINA_CLIENT_ID above) and
+// passed down as props, rather than having the screen read process.env
+// itself -- keeps the screen component a plain, easily-testable function
+// of its props.
+const analyticsScreen: ScreenPlugin = {
+  __type: 'screen',
+  name: 'Analytics',
+  Component: (props) =>
+    createElement(AnalyticsScreen, {
+      ...props,
+      endpoint: process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT,
+      secret: process.env.NEXT_PUBLIC_ANALYTICS_SECRET,
+    }),
+  Icon: () => null,
+  layout: 'fullscreen',
+  navCategory: 'Dashboard',
+};
 
 /*
  * Tina schema for every content type the professor edits directly. Each
@@ -67,6 +97,10 @@ const blogBlockTemplates = [
 ] as const;
 
 export default defineConfig({
+  cmsCallback: (cms) => {
+    cms.plugins.add(analyticsScreen);
+    return cms;
+  },
   branch: process.env.TINA_BRANCH || process.env.HEAD || 'main',
   clientId: process.env.NEXT_PUBLIC_TINA_CLIENT_ID || undefined,
   token: process.env.TINA_TOKEN || undefined,

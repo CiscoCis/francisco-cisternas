@@ -5,7 +5,7 @@
   "description": "Personal website of Francisco Cisternas — teaching, research, analytics.",
   "scripts": {
     "preinstall": "node scripts/check-node.js",
-    "dev": "tinacms dev -c \"next dev\"",
+    "dev": "dotenv -e .env.local -- tinacms dev -c \"next dev\"",
     "build": "next build",
     "dev:next-only": "next dev",
     "build:tina": "dotenv -e .env.local -- tinacms build --skip-cloud-checks && next build",
