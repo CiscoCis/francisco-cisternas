@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { COUNTRY_COORDS } from './countryCoords';
 
 /*
@@ -17,10 +17,17 @@ import { COUNTRY_COORDS } from './countryCoords';
  * traffic from. GoatCounter only ever reports country-level location (by
  * design, for visitor privacy) — there is no finer-grained data to plot,
  * so a country centroid is as precise as this can honestly be.
+ *
+ * Self-contained on purpose: no imports beyond React and the local
+ * coordinate table, no CSS framework -- this is bundled by Tina's own
+ * (separate) bundler, not the main Next.js site's pipeline. Styling is
+ * inline styles plus one injected <style> block for the handful of
+ * things inline styles can't do (keyframes, :hover, a scrollbar).
  */
 
 interface CountryStat {
-  country: string;
+  code: string;
+  name: string;
   count: number;
 }
 
@@ -29,9 +36,15 @@ interface PageStat {
   count: number;
 }
 
+interface DailyStat {
+  day: string;
+  count: number;
+}
+
 interface Summary {
   ok: boolean;
   total: number;
+  daily: DailyStat[];
   byCountry: CountryStat[];
   topPages: PageStat[];
 }
@@ -54,10 +67,35 @@ interface AnalyticsScreenProps {
   secret?: string;
 }
 
-function useFetch<T>(url: string | null): { data: T | null; error: string | null; loading: boolean } {
+/* ---------- palette ---------------------------------------------------- */
+
+const COLORS = {
+  bg: '#050b16',
+  panel: 'linear-gradient(160deg, rgba(20,32,56,0.9), rgba(8,15,28,0.9))',
+  border: 'rgba(148, 197, 255, 0.14)',
+  text: '#e7edf7',
+  muted: '#8ea0bd',
+  faint: '#5b6c88',
+  teal: '#2dd4bf',
+  blue: '#4aa3ff',
+  coral: '#ff6b57',
+  violet: '#a78bfa',
+  green: '#34d399',
+};
+
+function intensityColor(t: number): string {
+  if (t > 0.66) return COLORS.coral;
+  if (t > 0.33) return COLORS.teal;
+  return COLORS.blue;
+}
+
+/* ---------- data fetching ------------------------------------------------ */
+
+function useFetch<T>(url: string | null, reloadKey: number) {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(url));
+  const [loadedAt, setLoadedAt] = useState<number | null>(null);
 
   useEffect(() => {
     if (!url) return;
@@ -69,6 +107,8 @@ function useFetch<T>(url: string | null): { data: T | null; error: string | null
         if (cancelled) return;
         if (json.ok === false) throw new Error(json.error || 'request failed');
         setData(json);
+        setError(null);
+        setLoadedAt(Date.now());
       })
       .catch((err) => {
         if (!cancelled) setError(String(err.message || err));
@@ -79,33 +119,276 @@ function useFetch<T>(url: string | null): { data: T | null; error: string | null
     return () => {
       cancelled = true;
     };
-  }, [url]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url, reloadKey]);
 
-  return { data, error, loading };
+  return { data, error, loading, loadedAt };
 }
+
+function useCountUp(target: number, duration = 900) {
+  const [value, setValue] = useState(0);
+  const fromRef = useRef(0);
+
+  useEffect(() => {
+    const from = fromRef.current;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(Math.round(from + (target - from) * eased));
+      if (t < 1) raf = requestAnimationFrame(tick);
+      else fromRef.current = target;
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+
+  return value;
+}
+
+function useNow(intervalMs = 1000) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), intervalMs);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+  return now;
+}
+
+function timeAgo(fromMs: number | null, now: number): string {
+  if (!fromMs) return 'never';
+  const s = Math.max(0, Math.floor((now - fromMs) / 1000));
+  if (s < 5) return 'just now';
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  return `${h}h ago`;
+}
+
+function formatDay(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+/* ---------- shared bits -------------------------------------------------- */
+
+function RefreshIcon({ spinning }: { spinning: boolean }) {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      className={spinning ? 'gc-spin' : undefined}
+    >
+      <path d="M21 12a9 9 0 1 1-2.6-6.35" />
+      <path d="M21 3v6h-6" />
+    </svg>
+  );
+}
+
+function Card({
+  title,
+  right,
+  children,
+  style,
+}: {
+  title?: React.ReactNode;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      style={{
+        background: COLORS.panel,
+        border: `1px solid ${COLORS.border}`,
+        borderRadius: 16,
+        padding: 20,
+        boxShadow: '0 20px 40px -24px rgba(0,0,0,0.6)',
+        ...style,
+      }}
+    >
+      {(title || right) && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          {title && (
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', color: COLORS.muted, margin: 0 }}>
+              {title}
+            </p>
+          )}
+          {right}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+}
+
+/* ---------- trend chart --------------------------------------------------- */
+
+function TrendChart({ daily }: { daily: DailyStat[] }) {
+  const width = 640;
+  const height = 170;
+  const pad = 20;
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const max = Math.max(1, ...daily.map((d) => d.count));
+  const points = useMemo(
+    () =>
+      daily.map((d, i) => {
+        const x = daily.length <= 1 ? pad : pad + (i / (daily.length - 1)) * (width - pad * 2);
+        const y = height - pad - (d.count / max) * (height - pad * 2);
+        return { x, y, ...d };
+      }),
+    [daily, max]
+  );
+
+  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  const areaPath =
+    points.length > 0
+      ? `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${height - pad} L ${points[0].x.toFixed(1)} ${height - pad} Z`
+      : '';
+
+  function handleMove(e: React.MouseEvent<SVGSVGElement>) {
+    const svg = svgRef.current;
+    if (!svg || points.length === 0) return;
+    const rect = svg.getBoundingClientRect();
+    const relX = ((e.clientX - rect.left) / rect.width) * width;
+    let nearest = 0;
+    let best = Infinity;
+    points.forEach((p, i) => {
+      const d = Math.abs(p.x - relX);
+      if (d < best) {
+        best = d;
+        nearest = i;
+      }
+    });
+    setHoverIdx(nearest);
+  }
+
+  const weekTotal = daily.reduce((sum, d) => sum + d.count, 0);
+  const hovered = hoverIdx !== null ? points[hoverIdx] : null;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6 }}>
+        <span style={{ fontSize: 26, fontWeight: 700, color: COLORS.text }}>{weekTotal.toLocaleString()}</span>
+        <span style={{ fontSize: 12, color: COLORS.muted }}>views in the last 7 days</span>
+      </div>
+      <div style={{ position: 'relative' }}>
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${width} ${height}`}
+          style={{ width: '100%', height: 'auto', display: 'block', cursor: points.length ? 'crosshair' : 'default' }}
+          onMouseMove={handleMove}
+          onMouseLeave={() => setHoverIdx(null)}
+        >
+          <defs>
+            <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={COLORS.teal} stopOpacity={0.35} />
+              <stop offset="100%" stopColor={COLORS.teal} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+
+          {[0.25, 0.5, 0.75].map((f) => (
+            <line
+              key={f}
+              x1={pad}
+              x2={width - pad}
+              y1={pad + f * (height - pad * 2)}
+              y2={pad + f * (height - pad * 2)}
+              stroke="rgba(148,197,255,0.1)"
+              strokeDasharray="4 4"
+            />
+          ))}
+
+          {areaPath && <path d={areaPath} fill="url(#trendFill)" />}
+          {linePath && <path d={linePath} fill="none" stroke={COLORS.teal} strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" />}
+
+          {hovered && (
+            <g>
+              <line x1={hovered.x} x2={hovered.x} y1={pad} y2={height - pad} stroke="rgba(232,240,255,0.25)" />
+              <circle cx={hovered.x} cy={hovered.y} r={4.5} fill={COLORS.text} stroke={COLORS.teal} strokeWidth={2} />
+            </g>
+          )}
+
+          {points.map((p) => (
+            <circle key={p.day} cx={p.x} cy={p.y} r={9} fill="transparent" style={{ pointerEvents: 'none' }} />
+          ))}
+        </svg>
+
+        {hovered && (
+          <div
+            className="gc-fade-in"
+            style={{
+              position: 'absolute',
+              left: `${(hovered.x / width) * 100}%`,
+              top: `${(hovered.y / height) * 100}%`,
+              transform: 'translate(-50%, -135%)',
+              background: '#0b1626',
+              border: `1px solid ${COLORS.border}`,
+              borderRadius: 8,
+              padding: '6px 10px',
+              fontSize: 12,
+              color: COLORS.text,
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+              boxShadow: '0 8px 20px rgba(0,0,0,0.45)',
+            }}
+          >
+            <strong>{hovered.count.toLocaleString()}</strong> views · {formatDay(hovered.day)}
+          </div>
+        )}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: COLORS.faint, marginTop: 4 }}>
+        <span>{daily[0] ? formatDay(daily[0].day) : ''}</span>
+        <span>{daily[daily.length - 1] ? formatDay(daily[daily.length - 1].day) : ''}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- world map ---------------------------------------------------- */
 
 const MAP_WIDTH = 960;
 const MAP_HEIGHT = 480;
 
-function project(lat: number, lng: number): { x: number; y: number } {
-  return {
-    x: ((lng + 180) / 360) * MAP_WIDTH,
-    y: ((90 - lat) / 180) * MAP_HEIGHT,
-  };
+function project(lat: number, lng: number) {
+  return { x: ((lng + 180) / 360) * MAP_WIDTH, y: ((90 - lat) / 180) * MAP_HEIGHT };
 }
 
-function WorldMap({ byCountry }: { byCountry: CountryStat[] }) {
+function WorldMap({
+  byCountry,
+  selected,
+  hovered,
+  onSelect,
+  onHover,
+}: {
+  byCountry: CountryStat[];
+  selected: string | null;
+  hovered: string | null;
+  onSelect: (code: string | null) => void;
+  onHover: (code: string | null) => void;
+}) {
   const points = useMemo(() => {
     const max = Math.max(1, ...byCountry.map((c) => c.count));
     return byCountry
       .map((c) => {
-        const coord = COUNTRY_COORDS[c.country.toUpperCase()];
+        const key = c.code.toUpperCase();
+        const coord = COUNTRY_COORDS[key];
         if (!coord) return null;
         const { x, y } = project(coord.lat, coord.lng);
-        const intensity = c.count / max;
-        return { ...coord, x, y, count: c.count, intensity };
+        return { code: key, name: c.name || coord.name, x, y, count: c.count, intensity: c.count / max };
       })
-      .filter((p): p is NonNullable<typeof p> => p !== null);
+      .filter((p): p is NonNullable<typeof p> => p !== null)
+      .sort((a, b) => a.count - b.count);
   }, [byCountry]);
 
   const gridLines: React.ReactNode[] = [];
@@ -118,43 +401,303 @@ function WorldMap({ byCountry }: { byCountry: CountryStat[] }) {
     gridLines.push(<line key={`h${lat}`} x1={0} y1={y} x2={MAP_WIDTH} y2={y} />);
   }
 
+  const active = points.find((p) => p.code === (hovered ?? selected)) ?? null;
+
   return (
-    <svg
-      viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-      style={{ width: '100%', height: 'auto', background: '#061224', borderRadius: 10 }}
-    >
-      <defs>
-        <filter id="glow" x="-200%" y="-200%" width="500%" height="500%">
-          <feGaussianBlur stdDeviation="6" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
+    <div style={{ position: 'relative' }}>
+      <svg
+        viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+        style={{ width: '100%', height: 'auto', display: 'block', background: 'radial-gradient(120% 140% at 30% 20%, #0d1f3a 0%, #05101f 70%)', borderRadius: 12 }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onSelect(null);
+        }}
+      >
+        <defs>
+          <filter id="gc-glow" x="-200%" y="-200%" width="500%" height="500%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
 
-      <g stroke="#1c3a5e" strokeWidth={1} opacity={0.6}>
-        {gridLines}
-      </g>
-      <line x1={0} y1={MAP_HEIGHT / 2} x2={MAP_WIDTH} y2={MAP_HEIGHT / 2} stroke="#2c5c8f" strokeWidth={1.5} />
-      <line x1={MAP_WIDTH / 2} y1={0} x2={MAP_WIDTH / 2} y2={MAP_HEIGHT} stroke="#2c5c8f" strokeWidth={1.5} />
+        <g stroke="#173254" strokeWidth={1} opacity={0.6}>
+          {gridLines}
+        </g>
+        <line x1={0} y1={MAP_HEIGHT / 2} x2={MAP_WIDTH} y2={MAP_HEIGHT / 2} stroke="#2c5c8f" strokeWidth={1.5} opacity={0.7} />
+        <line x1={MAP_WIDTH / 2} y1={0} x2={MAP_WIDTH / 2} y2={MAP_HEIGHT} stroke="#2c5c8f" strokeWidth={1.5} opacity={0.7} />
 
-      {points.map((p) => {
-        const radius = 4 + p.intensity * 14;
-        const color = p.intensity > 0.6 ? '#ff6b57' : p.intensity > 0.25 ? '#2dd4bf' : '#4aa3ff';
-        return (
-          <g key={p.name} filter="url(#glow)">
-            <circle cx={p.x} cy={p.y} r={radius} fill={color} opacity={0.85} />
-            <circle cx={p.x} cy={p.y} r={2.5} fill="#fff" />
-            <title>
-              {p.name}: {p.count} visit{p.count === 1 ? '' : 's'}
-            </title>
-          </g>
-        );
-      })}
-    </svg>
+        {points.map((p) => {
+          const isActive = p.code === selected || p.code === hovered;
+          const radius = 4 + p.intensity * 14;
+          const color = intensityColor(p.intensity);
+          return (
+            <g
+              key={p.code}
+              filter="url(#gc-glow)"
+              style={{ cursor: 'pointer' }}
+              onMouseEnter={() => onHover(p.code)}
+              onMouseLeave={() => onHover(null)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect(selected === p.code ? null : p.code);
+              }}
+            >
+              {isActive && <circle cx={p.x} cy={p.y} r={radius + 6} fill="none" stroke={color} strokeWidth={1.5} opacity={0.8} className="gc-pulse-ring" />}
+              <circle cx={p.x} cy={p.y} r={radius} fill={color} opacity={isActive ? 1 : 0.8} />
+              <circle cx={p.x} cy={p.y} r={2.5} fill="#fff" />
+            </g>
+          );
+        })}
+      </svg>
+
+      {active && (
+        <div
+          className="gc-fade-in"
+          style={{
+            position: 'absolute',
+            left: `${(active.x / MAP_WIDTH) * 100}%`,
+            top: `${(active.y / MAP_HEIGHT) * 100}%`,
+            transform: 'translate(-50%, -140%)',
+            background: '#0b1626',
+            border: `1px solid ${COLORS.border}`,
+            borderRadius: 8,
+            padding: '6px 10px',
+            fontSize: 12,
+            color: COLORS.text,
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            boxShadow: '0 8px 20px rgba(0,0,0,0.45)',
+          }}
+        >
+          <strong>{active.name}</strong> · {active.count.toLocaleString()} visit{active.count === 1 ? '' : 's'}
+        </div>
+      )}
+
+      {points.length === 0 && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: COLORS.faint,
+            fontSize: 13,
+          }}
+        >
+          No visits recorded yet
+        </div>
+      )}
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 10, fontSize: 11, color: COLORS.muted }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: COLORS.blue, display: 'inline-block' }} /> Low
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: COLORS.teal, display: 'inline-block' }} /> Medium
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: COLORS.coral, display: 'inline-block' }} /> High
+        </span>
+      </div>
+    </div>
   );
 }
+
+/* ---------- country list -------------------------------------------------- */
+
+function CountryList({
+  byCountry,
+  selected,
+  hovered,
+  onSelect,
+  onHover,
+}: {
+  byCountry: CountryStat[];
+  selected: string | null;
+  hovered: string | null;
+  onSelect: (code: string | null) => void;
+  onHover: (code: string | null) => void;
+}) {
+  const sorted = useMemo(() => [...byCountry].sort((a, b) => b.count - a.count), [byCountry]);
+  const max = Math.max(1, ...sorted.map((c) => c.count));
+
+  if (sorted.length === 0) {
+    return <p style={{ color: COLORS.faint, fontSize: 13 }}>No data yet.</p>;
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 300, overflowY: 'auto' }} className="gc-scroll">
+      {sorted.map((c) => {
+        const code = c.code.toUpperCase();
+        const isActive = code === selected || code === hovered;
+        const pct = (c.count / max) * 100;
+        return (
+          <div
+            key={code || c.name}
+            onMouseEnter={() => onHover(code)}
+            onMouseLeave={() => onHover(null)}
+            onClick={() => onSelect(selected === code ? null : code)}
+            style={{
+              cursor: 'pointer',
+              padding: '6px 8px',
+              borderRadius: 8,
+              background: isActive ? 'rgba(148,197,255,0.1)' : 'transparent',
+              transition: 'background 120ms ease',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: COLORS.text, marginBottom: 4 }}>
+              <span>{c.name}</span>
+              <span style={{ color: COLORS.muted }}>{c.count.toLocaleString()}</span>
+            </div>
+            <div style={{ height: 5, borderRadius: 3, background: 'rgba(148,197,255,0.08)', overflow: 'hidden' }}>
+              <div
+                style={{
+                  height: '100%',
+                  width: `${pct}%`,
+                  background: intensityColor(c.count / max),
+                  borderRadius: 3,
+                  transition: 'width 500ms ease',
+                }}
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ---------- top pages ------------------------------------------------------ */
+
+function TopPages({ pages }: { pages: PageStat[] }) {
+  const max = Math.max(1, ...pages.map((p) => p.count));
+  if (pages.length === 0) return <p style={{ color: COLORS.faint, fontSize: 13 }}>No data yet.</p>;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {pages.map((p) => (
+        <div key={p.path}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: COLORS.text, marginBottom: 4 }}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80%' }}>{p.path}</span>
+            <span style={{ color: COLORS.muted }}>{p.count.toLocaleString()}</span>
+          </div>
+          <div style={{ height: 6, borderRadius: 3, background: 'rgba(148,197,255,0.08)', overflow: 'hidden' }}>
+            <div
+              style={{
+                height: '100%',
+                width: `${(p.count / max) * 100}%`,
+                background: `linear-gradient(90deg, ${COLORS.violet}, ${COLORS.blue})`,
+                borderRadius: 3,
+                transition: 'width 500ms ease',
+              }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- recent visits table -------------------------------------------- */
+
+type SortKey = 'when' | 'country' | 'referrer' | 'page';
+
+function RecentVisitsTable({ visits }: { visits: Visit[] }) {
+  const [query, setQuery] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('when');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let rows = visits;
+    if (q) {
+      rows = rows.filter((v) => [v.country, v.referrer, v.page].some((f) => (f || '').toLowerCase().includes(q)));
+    }
+    const sorted = [...rows].sort((a, b) => {
+      const av = (a[sortKey] || '').toString();
+      const bv = (b[sortKey] || '').toString();
+      return av.localeCompare(bv);
+    });
+    if (sortDir === 'desc') sorted.reverse();
+    return sorted;
+  }, [visits, query, sortKey, sortDir]);
+
+  function toggleSort(key: SortKey) {
+    if (key === sortKey) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDir('desc');
+    }
+  }
+
+  function Th({ label, k }: { label: string; k: SortKey }) {
+    return (
+      <th
+        onClick={() => toggleSort(k)}
+        style={{ padding: '6px 8px', cursor: 'pointer', userSelect: 'none', color: sortKey === k ? COLORS.text : COLORS.muted, whiteSpace: 'nowrap' }}
+      >
+        {label}
+        {sortKey === k && <span style={{ marginLeft: 4, fontSize: 10 }}>{sortDir === 'asc' ? '▲' : '▼'}</span>}
+      </th>
+    );
+  }
+
+  return (
+    <div>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Filter by country, referrer or page…"
+        style={{
+          width: '100%',
+          boxSizing: 'border-box',
+          background: 'rgba(148,197,255,0.06)',
+          border: `1px solid ${COLORS.border}`,
+          borderRadius: 8,
+          padding: '7px 10px',
+          fontSize: 13,
+          color: COLORS.text,
+          marginBottom: 10,
+          outline: 'none',
+        }}
+      />
+      <div style={{ maxHeight: 300, overflowY: 'auto' }} className="gc-scroll">
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <thead>
+            <tr style={{ textAlign: 'left', position: 'sticky', top: 0, background: '#0d1a2e' }}>
+              <Th label="When" k="when" />
+              <Th label="Country" k="country" />
+              <Th label="Referrer" k="referrer" />
+              <Th label="Page" k="page" />
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((v, i) => (
+              <tr key={i} className="gc-row" style={{ borderBottom: `1px solid ${COLORS.border}` }}>
+                <td style={{ padding: '7px 8px', whiteSpace: 'nowrap', color: COLORS.muted }}>{v.when}</td>
+                <td style={{ padding: '7px 8px', color: COLORS.text }}>{v.country}</td>
+                <td style={{ padding: '7px 8px', color: COLORS.text }}>{v.referrer || '—'}</td>
+                <td style={{ padding: '7px 8px', color: COLORS.text }}>{v.page}</td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={4} style={{ padding: '10px 8px', color: COLORS.faint }}>
+                  {visits.length === 0 ? 'No visits recorded yet.' : 'No visits match that filter.'}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- root ------------------------------------------------------------ */
 
 function NotConfigured() {
   return (
@@ -170,116 +713,149 @@ function NotConfigured() {
   );
 }
 
+const GLOBAL_STYLE = `
+  @keyframes gc-spin { to { transform: rotate(360deg); } }
+  .gc-spin { animation: gc-spin 0.8s linear infinite; }
+
+  @keyframes gc-pulse-ring {
+    0% { opacity: 0.9; transform: scale(0.7); }
+    100% { opacity: 0; transform: scale(1.6); }
+  }
+  .gc-pulse-ring { transform-origin: center; transform-box: fill-box; animation: gc-pulse-ring 1.6s ease-out infinite; }
+
+  @keyframes gc-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .gc-fade-in { animation: gc-fade-in 120ms ease-out; }
+
+  @keyframes gc-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+  .gc-live-dot { animation: gc-blink 1.8s ease-in-out infinite; }
+
+  .gc-row:hover { background: rgba(148,197,255,0.06); }
+
+  .gc-refresh-btn:hover { background: rgba(148,197,255,0.14) !important; }
+
+  .gc-scroll::-webkit-scrollbar { width: 8px; }
+  .gc-scroll::-webkit-scrollbar-track { background: transparent; }
+  .gc-scroll::-webkit-scrollbar-thumb { background: rgba(148,197,255,0.2); border-radius: 4px; }
+`;
+
 export default function AnalyticsScreen({ endpoint, secret }: AnalyticsScreenProps) {
   const configured = Boolean(endpoint && secret);
   const summaryUrl = configured ? `${endpoint}?action=summary&secret=${encodeURIComponent(secret!)}` : null;
   const recentUrl = configured ? `${endpoint}?action=recent&secret=${encodeURIComponent(secret!)}` : null;
 
-  const { data: summary, error: summaryError, loading: summaryLoading } = useFetch<Summary>(summaryUrl);
-  const { data: recent, error: recentError } = useFetch<RecentResponse>(recentUrl);
+  const [reloadKey, setReloadKey] = useState(0);
+  const { data: summary, error: summaryError, loading: summaryLoading, loadedAt } = useFetch<Summary>(summaryUrl, reloadKey);
+  const { data: recent, error: recentError } = useFetch<RecentResponse>(recentUrl, reloadKey);
+
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+
+  const now = useNow();
+  const total = useCountUp(summary?.total ?? 0);
+
+  // Gentle auto-refresh so the numbers stay live without the professor
+  // having to remember to reload the tab.
+  useEffect(() => {
+    if (!configured) return;
+    const id = setInterval(() => setReloadKey((k) => k + 1), 60_000);
+    return () => clearInterval(id);
+  }, [configured]);
 
   if (!configured) return <NotConfigured />;
 
+  const isLoading = summaryLoading && !summary;
+
   return (
-    <div style={{ padding: 32, maxWidth: 1100, margin: '0 auto' }}>
-      <h1 style={{ marginBottom: 24 }}>Analytics</h1>
-
-      {summaryError && (
-        <p style={{ color: '#b91c1c', marginBottom: 16 }}>Couldn&apos;t load stats: {summaryError}</p>
-      )}
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(200px, 260px) 1fr',
-          gap: 24,
-          marginBottom: 32,
-        }}
-      >
-        <div
-          style={{
-            background: '#fff',
-            border: '1px solid #e5e7eb',
-            borderRadius: 10,
-            padding: 24,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-          }}
-        >
-          <p style={{ fontSize: 13, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase' }}>
-            Total views
-          </p>
-          <p style={{ fontSize: 44, fontWeight: 700, marginTop: 8 }}>
-            {summaryLoading ? '…' : (summary?.total ?? 0).toLocaleString()}
-          </p>
-        </div>
-
-        <div>
-          <p style={{ fontSize: 13, color: '#6b7280', fontWeight: 600, marginBottom: 10, textTransform: 'uppercase' }}>
-            Where visitors are from
-          </p>
-          <WorldMap byCountry={summary?.byCountry ?? []} />
-        </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-        <div>
-          <h3 style={{ marginBottom: 12 }}>Most-viewed pages</h3>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-            <tbody>
-              {(summary?.topPages ?? []).map((p) => (
-                <tr key={p.path} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                  <td style={{ padding: '8px 4px' }}>{p.path}</td>
-                  <td style={{ padding: '8px 4px', textAlign: 'right', color: '#6b7280' }}>{p.count}</td>
-                </tr>
-              ))}
-              {summary && summary.topPages.length === 0 && (
-                <tr>
-                  <td style={{ padding: '8px 4px', color: '#9ca3af' }}>No data yet.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div>
-          <h3 style={{ marginBottom: 4 }}>Recent visits</h3>
-          <p style={{ fontSize: 12, color: '#9ca3af', marginBottom: 12 }}>
-            {recent?.updatedAt
-              ? `Last refreshed ${new Date(recent.updatedAt).toLocaleString()} — updates once a day`
-              : 'Not refreshed yet — see setup step 6'}
-          </p>
-          {recentError && <p style={{ color: '#b91c1c' }}>Couldn&apos;t load recent visits: {recentError}</p>}
-          <div style={{ maxHeight: 340, overflowY: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-              <thead>
-                <tr style={{ textAlign: 'left', color: '#6b7280' }}>
-                  <th style={{ padding: '6px 4px' }}>When</th>
-                  <th style={{ padding: '6px 4px' }}>Country</th>
-                  <th style={{ padding: '6px 4px' }}>Referrer</th>
-                  <th style={{ padding: '6px 4px' }}>Page</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(recent?.visits ?? []).map((v, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                    <td style={{ padding: '6px 4px', whiteSpace: 'nowrap' }}>{v.when}</td>
-                    <td style={{ padding: '6px 4px' }}>{v.country}</td>
-                    <td style={{ padding: '6px 4px' }}>{v.referrer || '—'}</td>
-                    <td style={{ padding: '6px 4px' }}>{v.page}</td>
-                  </tr>
-                ))}
-                {recent && recent.visits.length === 0 && (
-                  <tr>
-                    <td style={{ padding: '6px 4px', color: '#9ca3af' }} colSpan={4}>
-                      No visits recorded yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+    <div style={{ background: COLORS.bg, minHeight: '100%', padding: 32 }}>
+      <style>{GLOBAL_STYLE}</style>
+      <div style={{ maxWidth: 1180, margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <h1 style={{ margin: 0, color: COLORS.text, fontSize: 26 }}>Analytics</h1>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: COLORS.muted, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span className="gc-live-dot" style={{ width: 7, height: 7, borderRadius: '50%', background: COLORS.green, display: 'inline-block' }} />
+              Updated {timeAgo(loadedAt, now)}
+            </p>
           </div>
+          <button
+            className="gc-refresh-btn"
+            onClick={() => setReloadKey((k) => k + 1)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'rgba(148,197,255,0.08)',
+              border: `1px solid ${COLORS.border}`,
+              color: COLORS.text,
+              borderRadius: 8,
+              padding: '7px 12px',
+              fontSize: 13,
+              cursor: 'pointer',
+              transition: 'background 120ms ease',
+            }}
+          >
+            <RefreshIcon spinning={summaryLoading} />
+            Refresh
+          </button>
+        </div>
+
+        {summaryError && (
+          <p style={{ color: COLORS.coral, marginBottom: 16, fontSize: 13 }}>Couldn&apos;t load stats: {summaryError}</p>
+        )}
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 260px) 1fr', gap: 20, marginBottom: 20 }}>
+          <Card title="Total views">
+            <p style={{ fontSize: 46, fontWeight: 700, margin: 0, color: COLORS.text, fontVariantNumeric: 'tabular-nums' }}>
+              {isLoading ? '···' : total.toLocaleString()}
+            </p>
+            <p style={{ fontSize: 12, color: COLORS.faint, margin: '6px 0 0' }}>all time</p>
+          </Card>
+
+          <Card title="Last 7 days">
+            <TrendChart daily={summary?.daily ?? []} />
+          </Card>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20, marginBottom: 20 }}>
+          <Card title="Where visitors are from">
+            <WorldMap
+              byCountry={summary?.byCountry ?? []}
+              selected={selectedCountry}
+              hovered={hoveredCountry}
+              onSelect={setSelectedCountry}
+              onHover={setHoveredCountry}
+            />
+          </Card>
+          <Card title="By country">
+            <CountryList
+              byCountry={summary?.byCountry ?? []}
+              selected={selectedCountry}
+              hovered={hoveredCountry}
+              onSelect={setSelectedCountry}
+              onHover={setHoveredCountry}
+            />
+          </Card>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          <Card title="Most-viewed pages">
+            <TopPages pages={summary?.topPages ?? []} />
+          </Card>
+
+          <Card
+            title="Recent visits"
+            right={
+              <span style={{ fontSize: 11, color: COLORS.faint }}>
+                {recent?.updatedAt ? `Refreshed ${new Date(recent.updatedAt).toLocaleString()}` : 'Not refreshed yet'}
+              </span>
+            }
+          >
+            {recentError && <p style={{ color: COLORS.coral, fontSize: 13 }}>Couldn&apos;t load recent visits: {recentError}</p>}
+            <RecentVisitsTable visits={recent?.visits ?? []} />
+          </Card>
         </div>
       </div>
     </div>

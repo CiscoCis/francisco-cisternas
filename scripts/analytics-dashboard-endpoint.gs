@@ -127,15 +127,33 @@ function doGet(e) {
 /* ---------- live, aggregated stats (called on every dashboard open) ------- */
 
 function getSummary_() {
-  var total = goatcounterGet_('/api/v0/stats/total');
+  // `/api/v0/stats/total` defaults to a one-week window -- fetched twice:
+  // once with that default (its per-day breakdown feeds the trend chart),
+  // and once with a start date far enough back to cover the site's whole
+  // lifetime, for a genuine all-time count.
+  var week = goatcounterGet_('/api/v0/stats/total');
+  // `start` picked to comfortably predate this site rather than reaching
+  // back decades -- the response includes a full daily+hourly breakdown
+  // per day in range, so an unnecessarily early date bloats the payload
+  // for no benefit.
+  var allTime = goatcounterGet_('/api/v0/stats/total?start=2025-01-01');
   var locations = goatcounterGet_('/api/v0/stats/locations');
   var hits = goatcounterGet_('/api/v0/stats/hits?limit=10');
 
+  var dailyStats = (week.stats || []).map(function (row) {
+    return { day: row.day, count: row.daily || 0 };
+  });
+
   return {
     ok: true,
-    total: total.total || 0,
+    total: allTime.total || 0,
+    daily: dailyStats,
+    // `id` is the actual ISO country code (e.g. "US"); `name` is the
+    // human-readable display name (e.g. "United States"). Both are kept
+    // since the map needs the code to look up coordinates but the UI
+    // wants the readable name to display.
     byCountry: (locations.stats || []).map(function (row) {
-      return { country: row.name || row.id || 'Unknown', count: row.count || 0 };
+      return { code: row.id || '', name: row.name || row.id || 'Unknown', count: row.count || 0 };
     }),
     topPages: (hits.hits || []).map(function (row) {
       return { path: row.path || row.title || 'Unknown', count: row.count || 0 };
