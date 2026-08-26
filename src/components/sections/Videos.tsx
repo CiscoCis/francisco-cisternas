@@ -1,12 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { Video } from '@/lib/content/videos';
+import type { Video, VideoEmbed } from '@/lib/content/videos';
 import { parseVideoEmbed, yearFromDate } from '@/lib/content/videos';
 import { asset } from '@/lib/asset';
 import SectionHeader from '../SectionHeader';
 import TriangleField from '../TriangleField';
 import Carousel from '../Carousel';
+import Modal from '../Modal';
 import { Icon } from '../Icons';
 import styles from './Videos.module.css';
 
@@ -18,20 +19,24 @@ import styles from './Videos.module.css';
  *
  * A horizontally-scrolling carousel (the same hand-rolled one used by
  * Beyond Work and Writing) rather than a grid — this list is meant to stay
- * short and browsable at a glance, not paginated. Search + category live
- * above it because filtering a carousel by scrolling alone doesn't scale
- * once there's more than a handful of talks.
+ * short and browsable at a glance, not paginated. Search, category and
+ * sort live above it because filtering a carousel by scrolling alone
+ * doesn't scale once there's more than a handful of talks.
  *
- * Each card shows a thumbnail with a play button rather than an eager
- * <iframe>, so visiting the page never loads a third-party video player
- * that wasn't asked for — the same care already given to self-hosted
- * fonts and lazy-loaded images elsewhere on this site.
+ * Playback opens in the site's shared Modal rather than swapping the
+ * thumbnail in place: some uploaders (TEDx talks in particular) disable
+ * third-party embedding entirely, which shows YouTube's own "Video
+ * unavailable" message inside the iframe with no way out. The modal
+ * always offers a "Watch on YouTube/Vimeo" link that opens the real page
+ * in a new tab, so that's never a dead end.
  */
 
 type SortOption = 'newest' | 'oldest';
 
-function VideoCard({ video }: { video: Video }) {
-  const [playing, setPlaying] = useState(false);
+const READ_MORE_THRESHOLD = 140;
+
+function VideoCard({ video, onOpen }: { video: Video; onOpen: () => void }) {
+  const [expanded, setExpanded] = useState(false);
   const embed = parseVideoEmbed(video.url);
   if (!embed) return null;
 
@@ -41,43 +46,49 @@ function VideoCard({ video }: { video: Video }) {
       ? embed.thumbnailUrl
       : undefined;
 
+  const isLong = (video.description?.length ?? 0) > READ_MORE_THRESHOLD;
+
   return (
     <li className={styles.slide}>
       <div className={`card ${styles.card}`} style={{ ['--tint' as string]: 'var(--blue)' }}>
         <span className="card-tint" aria-hidden="true" />
         <div className={styles.frame}>
-          {playing ? (
-            <iframe
-              src={`${embed.embedUrl}?autoplay=1`}
-              title={video.title}
-              className={styles.iframe}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          ) : (
-            <button
-              type="button"
-              className={styles.thumbButton}
-              onClick={() => setPlaying(true)}
-              aria-label={`Play ${video.title}`}
-            >
-              {thumbnail ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={thumbnail} alt="" loading="lazy" className={styles.thumbImage} />
-              ) : (
-                <span className={styles.thumbFallback} aria-hidden="true" />
-              )}
-              {video.category && <span className={`chip chip--quiet ${styles.categoryChip}`}>{video.category}</span>}
-              <span className={styles.playBtn} aria-hidden="true">
-                <Icon name="play" size={24} />
-              </span>
-            </button>
-          )}
+          <button
+            type="button"
+            className={styles.thumbButton}
+            onClick={onOpen}
+            aria-label={`Play ${video.title}`}
+          >
+            {thumbnail ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={thumbnail} alt="" loading="lazy" className={styles.thumbImage} />
+            ) : (
+              <span className={styles.thumbFallback} aria-hidden="true" />
+            )}
+            {video.category && <span className={`chip chip--quiet ${styles.categoryChip}`}>{video.category}</span>}
+            <span className={styles.playBtn} aria-hidden="true">
+              <Icon name="play" size={24} />
+            </span>
+          </button>
         </div>
 
         <div className={styles.body}>
           <h3 className={styles.title}>{video.title}</h3>
-          {video.description && <p className={styles.desc}>{video.description}</p>}
+          {video.description && (
+            <div className={styles.descWrap}>
+              <p className={`${styles.desc} ${expanded ? '' : styles.descClamped}`}>{video.description}</p>
+              {isLong && (
+                <button
+                  type="button"
+                  className={styles.readMore}
+                  onClick={() => setExpanded((e) => !e)}
+                  aria-expanded={expanded}
+                >
+                  {expanded ? 'Show less' : 'Read more'}
+                </button>
+              )}
+            </div>
+          )}
           {video.date && <p className={styles.date}>{video.date}</p>}
         </div>
       </div>
@@ -85,10 +96,51 @@ function VideoCard({ video }: { video: Video }) {
   );
 }
 
+function VideoModal({ video, embed, onClose }: { video: Video | null; embed: VideoEmbed | null; onClose: () => void }) {
+  return (
+    <Modal
+      open={Boolean(video && embed)}
+      onClose={onClose}
+      title={video?.title ?? ''}
+      eyebrow={
+        video && (video.category || video.date) ? (
+          <>
+            {video.category && <span>{video.category}</span>}
+            {video.date && <em>{video.date}</em>}
+          </>
+        ) : undefined
+      }
+      footer={
+        video && (
+          <a className="btn" href={video.url} target="_blank" rel="noopener noreferrer">
+            Watch on {embed?.provider === 'vimeo' ? 'Vimeo' : 'YouTube'}
+            <Icon name="external" size={16} />
+          </a>
+        )
+      }
+    >
+      {embed && (
+        <div className={styles.modalFrame}>
+          <iframe
+            key={embed.embedUrl}
+            src={`${embed.embedUrl}?autoplay=1`}
+            title={video?.title}
+            className={styles.modalIframe}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      )}
+      {video?.description && <p className={styles.modalDesc}>{video.description}</p>}
+    </Modal>
+  );
+}
+
 export default function Videos({ videos }: { videos: Video[] }) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState<SortOption>('newest');
+  const [openVideo, setOpenVideo] = useState<Video | null>(null);
 
   const playable = useMemo(() => videos.filter((v) => parseVideoEmbed(v.url)), [videos]);
 
@@ -118,7 +170,7 @@ export default function Videos({ videos }: { videos: Video[] }) {
 
   if (!playable.length) return null;
 
-  const showFilters = playable.length > 1;
+  const openEmbed = openVideo ? parseVideoEmbed(openVideo.url) : null;
 
   return (
     <section id="videos" className="section" aria-labelledby="videos-h">
@@ -132,68 +184,66 @@ export default function Videos({ videos }: { videos: Video[] }) {
           lede="A short set of recorded talks, lectures and interviews."
         />
 
-        {showFilters && (
-          <div className={styles.filterBar}>
-            <div className={styles.search}>
-              <Icon name="search" size={15} aria-hidden="true" />
-              <label htmlFor="video-search" className="sr-only">
-                Search videos
-              </label>
-              <input
-                id="video-search"
-                type="search"
-                className={styles.searchInput}
-                placeholder="Search videos…"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
+        <div className={styles.filterBar}>
+          <div className={styles.search}>
+            <Icon name="search" size={15} aria-hidden="true" />
+            <label htmlFor="video-search" className="sr-only">
+              Search videos
+            </label>
+            <input
+              id="video-search"
+              type="search"
+              className={styles.searchInput}
+              placeholder="Search videos…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
 
-            {categories.length > 0 && (
-              <div className={styles.selectWrap}>
-                <label htmlFor="video-category" className="sr-only">
-                  Filter by category
-                </label>
-                <select
-                  id="video-category"
-                  className={styles.select}
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  <option value="all">All categories</option>
-                  {categories.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-                <Icon name="chevron" size={14} aria-hidden="true" />
-              </div>
-            )}
-
-            <div className={`${styles.selectWrap} ${styles.sortWrap}`}>
-              <Icon name="sort" size={14} aria-hidden="true" />
-              <label htmlFor="video-sort" className="sr-only">
-                Sort videos
+          {categories.length > 0 && (
+            <div className={styles.selectWrap}>
+              <label htmlFor="video-category" className="sr-only">
+                Filter by category
               </label>
               <select
-                id="video-sort"
+                id="video-category"
                 className={styles.select}
-                value={sort}
-                onChange={(e) => setSort(e.target.value as SortOption)}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
               >
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
+                <option value="all">All categories</option>
+                {categories.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </select>
               <Icon name="chevron" size={14} aria-hidden="true" />
             </div>
+          )}
+
+          <div className={`${styles.selectWrap} ${styles.sortWrap}`}>
+            <Icon name="sort" size={14} aria-hidden="true" />
+            <label htmlFor="video-sort" className="sr-only">
+              Sort videos
+            </label>
+            <select
+              id="video-sort"
+              className={styles.select}
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortOption)}
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+            <Icon name="chevron" size={14} aria-hidden="true" />
           </div>
-        )}
+        </div>
 
         {results.length ? (
           <Carousel as="ul" className={styles.grid} label="Videos">
             {results.map((v) => (
-              <VideoCard key={v.id} video={v} />
+              <VideoCard key={v.id} video={v} onOpen={() => setOpenVideo(v)} />
             ))}
           </Carousel>
         ) : (
@@ -212,6 +262,8 @@ export default function Videos({ videos }: { videos: Video[] }) {
           </p>
         )}
       </div>
+
+      <VideoModal video={openVideo} embed={openEmbed} onClose={() => setOpenVideo(null)} />
     </section>
   );
 }
