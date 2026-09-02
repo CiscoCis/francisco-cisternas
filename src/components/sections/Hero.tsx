@@ -42,6 +42,12 @@ const links: {
     icon: 'user',
     external: true,
   },
+  {
+    label: 'LinkedIn',
+    href: profile.contact.linkedinUrl,
+    icon: 'linkedin',
+    external: true,
+  },
 ];
 
 export default function Hero() {

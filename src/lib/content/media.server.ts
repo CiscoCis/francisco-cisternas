@@ -12,17 +12,23 @@ interface RawMediaStory {
   description?: string | null;
   url?: string | null;
   language?: string | null;
+  draft?: boolean | null;
 }
 
+const isProd = process.env.NODE_ENV === 'production';
+
+/** Non-draft (in production) media items. */
 export function getMediaItems(): MediaItem[] {
-  return readCollection<RawMediaStory>('media').map(({ id, data }) => ({
-    id,
-    title: data.title,
-    source: data.source ?? '',
-    date: data.date ?? '',
-    category: (data.category ?? 'Profile') as MediaCategory,
-    description: data.description ?? '',
-    url: data.url ?? '',
-    language: data.language ?? undefined,
-  }));
+  return readCollection<RawMediaStory>('media')
+    .filter(({ data }) => !(isProd && data.draft))
+    .map(({ id, data }) => ({
+      id,
+      title: data.title,
+      source: data.source ?? '',
+      date: data.date ?? '',
+      category: (data.category ?? 'Profile') as MediaCategory,
+      description: data.description ?? '',
+      url: data.url ?? '',
+      language: data.language ?? undefined,
+    }));
 }

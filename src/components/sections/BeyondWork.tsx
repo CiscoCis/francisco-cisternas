@@ -1,4 +1,5 @@
-import { interests, beyondWorkLede } from '@/data/interests';
+import type { BeyondWorkItem } from '@/lib/content/beyondWork';
+import { beyondWorkLede } from '@/lib/content/beyondWork';
 import { asset } from '@/lib/asset';
 import SectionHeader from '../SectionHeader';
 import TriangleField from '../TriangleField';
@@ -8,19 +9,17 @@ import { Icon } from '../Icons';
 import styles from './BeyondWork.module.css';
 
 /*
- * Beyond Work — change requirements §7.
- *
- * A small carousel of the interests marked `feature` in
- * src/data/interests.ts, each with a short story (`note`) in Francisco's
- * own words. The interests themselves were supplied; the photographs and
- * stories were not — a card without a photo falls back to a typographic
- * treatment rather than a broken image or a stock substitute, and a card
- * without a note simply omits the sentence.
+ * Beyond Work — a small carousel of interests, managed through TinaCMS
+ * (content/beyond/*.json) exactly like every other section's content, so
+ * items can be added, edited, hidden (draft) or removed without touching
+ * code. Each item carries an optional short story (`note`) in Francisco's
+ * own words. A card without a photo falls back to a typographic treatment
+ * rather than a broken image or a stock substitute, and a card without a
+ * note simply omits the sentence.
  */
 
-export default function BeyondWork() {
-  const featured = interests.filter((i) => i.feature);
-  if (!featured.length) return null;
+export default function BeyondWork({ items }: { items: BeyondWorkItem[] }) {
+  if (!items.length) return null;
 
   return (
     <section
@@ -40,7 +39,7 @@ export default function BeyondWork() {
 
         <Reveal variant="item">
           <Carousel as="ul" className={styles.grid} label="Beyond work">
-            {featured.map((i) => (
+            {items.map((i) => (
               <li
                 key={i.id}
                 className={`${styles.item} ${i.photo ? styles.hasPhoto : ''}`}

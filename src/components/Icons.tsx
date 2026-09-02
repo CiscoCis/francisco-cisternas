@@ -44,6 +44,7 @@ export type IconName =
   | 'external'
   | 'orcid'
   | 'scholar'
+  | 'linkedin'
   | 'leaf'
   | 'heart'
   | 'menu'
@@ -298,6 +299,18 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <path d="m12 3.4 9.3 4.5L12 12.4 2.7 7.9 12 3.4Z" />
       <path d="M6.5 10.2v4.4c0 1.7 2.5 3 5.5 3s5.5-1.3 5.5-3v-4.4" />
+    </>
+  ),
+  /* Professional-network mark: a rounded frame with a simple "in" glyph,
+     drawn in the same outline weight as the orcid/scholar marks above
+     rather than reproducing the brand's actual logotype. */
+  linkedin: (
+    <>
+      <rect x="3.4" y="3.4" width="17.2" height="17.2" rx="3.4" />
+      <circle cx="8.2" cy="8.4" r=".35" />
+      <path d="M8.2 11v6" />
+      <path d="M12 17v-3.6c0-1.6 1.2-2.5 2.4-2.5s2.2.9 2.2 2.4V17" />
+      <path d="M12 11v6" />
     </>
   ),
   /* Sustainability — leaf growing out of a measured base. */

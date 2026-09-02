@@ -8,6 +8,7 @@ import Media from '@/components/sections/Media';
 import Videos from '@/components/sections/Videos';
 import Writing from '@/components/sections/Writing';
 import BeyondWork from '@/components/sections/BeyondWork';
+import Recommendations from '@/components/sections/Recommendations';
 import Contact from '@/components/sections/Contact';
 import { getPublications } from '@/lib/content/publications.server';
 import { getGrants } from '@/lib/content/grants.server';
@@ -18,6 +19,8 @@ import { getVisibleTeachingStories } from '@/lib/content/teachingStories.server'
 import { getMediaItems } from '@/lib/content/media.server';
 import { getVisibleVideos } from '@/lib/content/videos.server';
 import { getVisiblePosts } from '@/lib/content/blog.server';
+import { getVisibleBeyondWork } from '@/lib/content/beyondWork.server';
+import { getRecommendations } from '@/lib/content/recommendations.server';
 import { getSectionOrder } from '@/lib/content/siteSettings.server';
 import type { SectionKey } from '@/lib/content/siteSettings';
 
@@ -49,7 +52,8 @@ export default function Page() {
     media: <Media items={getMediaItems()} />,
     videos: <Videos videos={getVisibleVideos()} />,
     writing: <Writing posts={getVisiblePosts()} />,
-    beyond: <BeyondWork />,
+    beyond: <BeyondWork items={getVisibleBeyondWork()} />,
+    recommendations: <Recommendations items={getRecommendations()} />,
     contact: <Contact />,
   };
 

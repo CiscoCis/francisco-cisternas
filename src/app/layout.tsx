@@ -6,6 +6,8 @@ import { hasMedia } from '@/lib/content/media';
 import { getMediaItems } from '@/lib/content/media.server';
 import { hasVideos } from '@/lib/content/videos';
 import { getVisibleVideos } from '@/lib/content/videos.server';
+import { hasRecommendations } from '@/lib/content/recommendations';
+import { getRecommendations } from '@/lib/content/recommendations.server';
 import { getSectionOrder } from '@/lib/content/siteSettings.server';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -160,7 +162,8 @@ export default function RootLayout({
   const nav = buildNav(
     getSectionOrder(),
     hasMedia(getMediaItems()),
-    hasVideos(getVisibleVideos())
+    hasVideos(getVisibleVideos()),
+    hasRecommendations(getRecommendations())
   );
 
   return (

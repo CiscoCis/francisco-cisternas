@@ -100,6 +100,18 @@ var SEND_AUTO_REPLY = true;
 /** Signs the automatic reply to visitors. */
 var REPLY_FROM_NAME = 'Francisco Cisternas';
 
+/** Display name shown as the sender on both emails this script sends.
+ *  Apps Script always sends from the Google account that owns/runs the
+ *  script -- there is no way around that from code, it's a platform rule.
+ *  What this DOES control is the friendly name recipients see (so it
+ *  reads "Francisco Cisternas — Website", not the raw Gmail account name)
+ *  and, further down, where a reply actually goes. If the underlying
+ *  Gmail account must not be this script's owner at all, the fix is to
+ *  transfer this Apps Script project's ownership to the professor's own
+ *  Google account -- an account-level change, not something any code
+ *  change here can do. */
+var SEND_AS_NAME = 'Francisco Cisternas — Website';
+
 /** The tab in the spreadsheet that rows are appended to. */
 var SHEET_NAME = 'Messages';
 
@@ -159,6 +171,7 @@ function doPost(e) {
     if (NOTIFY_EMAIL) {
       MailApp.sendEmail({
         to: NOTIFY_EMAIL,
+        name: SEND_AS_NAME,
         replyTo: email,
         subject: 'Website message: ' + (subject || 'no subject'),
         body:
@@ -174,9 +187,15 @@ function doPost(e) {
     }
 
     // Tell the visitor their message arrived, and that a reply is coming.
+    // name + replyTo together are what keep this from accidentally going
+    // back to the script owner's own inbox if the visitor hits "reply" --
+    // without them, both default to whichever Google account runs this
+    // script, not the professor.
     if (SEND_AUTO_REPLY) {
       MailApp.sendEmail({
         to: email,
+        name: SEND_AS_NAME,
+        replyTo: NOTIFY_EMAIL || undefined,
         subject: 'Thank you for reaching out — ' + REPLY_FROM_NAME,
         body:
           'Dear ' + name + ',\n\n' +

@@ -10,6 +10,7 @@ export type SectionKey =
   | 'videos'
   | 'writing'
   | 'beyond'
+  | 'recommendations'
   | 'contact';
 
 /** Today's order — also what a fresh site starts with before any edit. */
@@ -22,5 +23,6 @@ export const DEFAULT_SECTION_ORDER: SectionKey[] = [
   'videos',
   'writing',
   'beyond',
+  'recommendations',
   'contact',
 ];

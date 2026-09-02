@@ -47,6 +47,7 @@ export const profile = {
     orcidUrl: 'https://orcid.org/0000-0002-7176-9728',
     profileUrl:
       'https://www.bschool.cuhk.edu.hk/staff/cisternas-vera-francisco/',
+    linkedinUrl: 'https://www.linkedin.com/in/francisco-cisternas-978a4032/',
   },
 
   education: [
@@ -105,6 +106,12 @@ export const journey: JourneyStop[] = [
     place: 'University of Chile',
     where: 'Santiago, Chile',
     note: 'Industrial engineering, then a master’s in operations management.',
+  },
+  {
+    period: '2007 – 2010',
+    place: 'Antofagasta Minerals',
+    where: 'Salamanca, Chile',
+    note: 'Project and evaluation engineering roles in the mining industry, including Repowering II, a billion-dollar expansion of Minera Los Pelambres.',
   },
   {
     period: '2014 – 2017',

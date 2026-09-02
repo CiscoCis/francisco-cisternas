@@ -21,18 +21,21 @@ const LABELS: Record<SectionKey, string> = {
   videos: 'Videos',
   writing: 'Blog',
   beyond: 'Beyond Work',
+  recommendations: 'Recommendations',
   contact: 'Contact',
 };
 
 export function buildNav(
   order: SectionKey[],
   hasMedia: boolean,
-  hasVideos: boolean
+  hasVideos: boolean,
+  hasRecommendations: boolean
 ): NavItem[] {
   return order
     .filter((key) => {
       if (key === 'media') return hasMedia;
       if (key === 'videos') return hasVideos;
+      if (key === 'recommendations') return hasRecommendations;
       return true;
     })
     .map((key) => ({ id: key, label: LABELS[key] }));
