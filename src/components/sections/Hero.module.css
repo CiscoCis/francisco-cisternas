@@ -216,7 +216,7 @@
 @media (max-width: 1080px) {
   .hero {
     gap: 40px;
-    padding-bottom: 44px;
+    padding-bottom: 32px;
   }
 }
 
@@ -224,8 +224,8 @@
   .hero {
     grid-template-columns: 1fr;
     min-height: 0;
-    padding-top: 40px;
-    gap: 34px;
+    padding-top: 28px;
+    gap: 26px;
   }
   .photoCol {
     max-width: 340px;
@@ -270,7 +270,7 @@
 
 @media (max-width: 480px) {
   .portrait {
-    aspect-ratio: 1000 / 1080;
+    aspect-ratio: 1000 / 960;
   }
   .disciplines {
     font-size: 12px;

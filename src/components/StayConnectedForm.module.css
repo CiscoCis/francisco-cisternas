@@ -1,0 +1,80 @@
+.form {
+  display: block;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 25px;
+  color: var(--brand-900);
+}
+
+.blurb {
+  margin: 10px 0 24px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.optional {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+}
+
+.trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: -8px 0 18px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.checkboxRow input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+
+.twoUp {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .twoUp {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.6;
+}
+
+.note {
+  margin-top: 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}

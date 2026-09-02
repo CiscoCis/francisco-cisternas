@@ -72,6 +72,44 @@
  *      Sheet and that both emails (to you, and the automatic one back to
  *      the test address you used) arrive.
  *
+ *  ── STEP 7 (optional, ~5 minutes): make the auto-reply genuinely come ───
+ *  ── from the professor's own address, not whichever Google account ──────
+ *  ── happens to run this script ───────────────────────────────────────────
+ *
+ *  Two different emails go out per submission: one TO the professor
+ *  (telling him someone wrote in) and one TO the visitor (an automatic
+ *  "thanks, I got your message"). The first one is fine coming from
+ *  whichever account runs this script — what matters there is that
+ *  replying goes to the visitor, which it already does. The second one —
+ *  the one the VISITOR receives — is what people mean when they say it
+ *  "looks like it's coming from the wrong person": by default it's sent
+ *  from the same script-owner account too, not from the professor.
+ *
+ *  Google Apps Script can only send FROM an address that is either the
+ *  account running the script, or an address that same account has
+ *  verified under Gmail's "Send mail as" feature — there is no way to
+ *  simply type a different address into the code and have it work.
+ *
+ *   7a. In the Gmail account that owns this Apps Script project (i.e.
+ *       whichever Google account you used for steps 1-6 above), go to
+ *       Settings (gear icon) → See all settings → Accounts and Import →
+ *       "Send mail as" → Add another email address.
+ *   7b. Enter the professor's real address (the same one as
+ *       NOTIFY_EMAIL below) and follow the prompts. Google sends a
+ *       verification email TO that address with a confirmation link.
+ *   7c. The professor opens that email (in his own inbox) and clicks the
+ *       confirmation link — this proves to Google that he really does
+ *       receive mail at that address, which is what verification means.
+ *   7d. Back in this script, set VISITOR_REPLY_FROM_ADDRESS below to
+ *       that same address, save, and redeploy a new version (see "IF YOU
+ *       EVER EDIT THIS SCRIPT" below). From then on, the auto-reply a
+ *       visitor receives genuinely shows the professor's address as the
+ *       sender.
+ *
+ *  Until step 7 is done, VISITOR_REPLY_FROM_ADDRESS should stay exactly
+ *  '' — setting it before the alias is verified makes every auto-reply
+ *  fail with an "Invalid from address" error instead of sending at all.
+ *
  *  ── IF YOU EVER EDIT THIS SCRIPT AFTER THE FIRST DEPLOYMENT ─────────────
  *  Deploy → Manage deployments → pencil icon on the existing one →
  *  Version: New version → Deploy. Editing the code without doing this
@@ -104,13 +142,25 @@ var REPLY_FROM_NAME = 'Francisco Cisternas';
  *  Apps Script always sends from the Google account that owns/runs the
  *  script -- there is no way around that from code, it's a platform rule.
  *  What this DOES control is the friendly name recipients see (so it
- *  reads "Francisco Cisternas — Website", not the raw Gmail account name)
- *  and, further down, where a reply actually goes. If the underlying
- *  Gmail account must not be this script's owner at all, the fix is to
- *  transfer this Apps Script project's ownership to the professor's own
- *  Google account -- an account-level change, not something any code
- *  change here can do. */
+ *  reads "Francisco Cisternas — Website", not the raw Gmail account name). */
 var SEND_AS_NAME = 'Francisco Cisternas — Website';
+
+/** The address the auto-reply to a VISITOR is sent from (see step 7 in the
+ *  setup instructions above this line for how to enable it). Leave this
+ *  exactly '' until that one-time setup is done -- MailApp throws an error
+ *  if `from` names an address that isn't a verified alias on the Google
+ *  account running this script, so this stays off until it will actually
+ *  work.
+ *
+ *  Once verified, set this to the professor's real address and the
+ *  "thank you for reaching out" email a visitor receives genuinely comes
+ *  from him, not from whichever Google account happens to run this
+ *  script. The FIRST email (the "someone contacted you" notification TO
+ *  the professor) intentionally does NOT use this -- it's expected to
+ *  come from the script's own account, since that's simply who is
+ *  telling him a message arrived; what matters there is that replying to
+ *  it goes to the visitor, which `replyTo: email` below already does. */
+var VISITOR_REPLY_FROM_ADDRESS = '';
 
 /** The tab in the spreadsheet that rows are appended to. */
 var SHEET_NAME = 'Messages';
@@ -187,12 +237,14 @@ function doPost(e) {
     }
 
     // Tell the visitor their message arrived, and that a reply is coming.
-    // name + replyTo together are what keep this from accidentally going
-    // back to the script owner's own inbox if the visitor hits "reply" --
-    // without them, both default to whichever Google account runs this
-    // script, not the professor.
+    // replyTo is what keeps this from accidentally going back to the
+    // script owner's own inbox if the visitor hits "reply" -- without it,
+    // that defaults to whichever Google account runs this script, not the
+    // professor. `from` additionally makes the visible sender address
+    // itself the professor's real one, once VISITOR_REPLY_FROM_ADDRESS is
+    // set up (see that constant's comment above).
     if (SEND_AUTO_REPLY) {
-      MailApp.sendEmail({
+      var replyOptions = {
         to: email,
         name: SEND_AS_NAME,
         replyTo: NOTIFY_EMAIL || undefined,
@@ -210,7 +262,11 @@ function doPost(e) {
           '\n\n—\nThis is an automated acknowledgement; there is no need to ' +
           'reply to it directly. If you would like to add anything, just ' +
           'use the contact form again.',
-      });
+      };
+      if (VISITOR_REPLY_FROM_ADDRESS) {
+        replyOptions.from = VISITOR_REPLY_FROM_ADDRESS;
+      }
+      MailApp.sendEmail(replyOptions);
     }
 
     return json({ ok: true });

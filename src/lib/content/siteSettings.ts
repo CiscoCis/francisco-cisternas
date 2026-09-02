@@ -11,6 +11,7 @@ export type SectionKey =
   | 'writing'
   | 'beyond'
   | 'recommendations'
+  | 'stayConnected'
   | 'contact';
 
 /** Today's order — also what a fresh site starts with before any edit. */
@@ -24,5 +25,6 @@ export const DEFAULT_SECTION_ORDER: SectionKey[] = [
   'writing',
   'beyond',
   'recommendations',
+  'stayConnected',
   'contact',
 ];

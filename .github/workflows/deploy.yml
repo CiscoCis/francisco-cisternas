@@ -75,6 +75,10 @@ jobs:
       # and shared secret the private TinaCMS "Analytics" screen reads from
       # (scripts/analytics-dashboard-endpoint.gs) -- unrelated to the two
       # trackers above.
+      # GUESTBOOK_ENDPOINT is the Apps Script Web App URL the "Stay
+      # Connected" form posts to (scripts/guestbook-endpoint.gs). Until set,
+      # that form is visible but submitting does nothing, same principle as
+      # the contact form above.
       - run: npm run build:tina
         env:
           BASE_PATH: ${{ vars.SITE_URL && '' || steps.base.outputs.path }}
@@ -86,6 +90,7 @@ jobs:
           NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
           NEXT_PUBLIC_ANALYTICS_ENDPOINT: ${{ vars.ANALYTICS_ENDPOINT }}
           NEXT_PUBLIC_ANALYTICS_SECRET: ${{ secrets.ANALYTICS_SECRET }}
+          NEXT_PUBLIC_GUESTBOOK_ENDPOINT: ${{ vars.GUESTBOOK_ENDPOINT }}
 
       # Stops GitHub Pages running the output through Jekyll, which would
       # strip the _next/ directory and break every stylesheet and script.

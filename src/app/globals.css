@@ -1140,7 +1140,10 @@ textarea {
     --gutter: 34px;
   }
   .section {
-    padding-block: 70px;
+    /* Change requirements §5 (mobile review): a little less vertical
+       breathing room per section so more of the page is visible at a
+       glance on a phone/small tablet -- text size is untouched. */
+    padding-block: 60px;
   }
 }
 
@@ -1153,7 +1156,7 @@ textarea {
     font-size: 16.5px;
   }
   .section {
-    padding-block: 56px;
+    padding-block: 42px;
   }
   .lede {
     font-size: 17px;

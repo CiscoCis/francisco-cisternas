@@ -22,6 +22,7 @@ const LABELS: Record<SectionKey, string> = {
   writing: 'Blog',
   beyond: 'Beyond Work',
   recommendations: 'Recommendations',
+  stayConnected: 'Stay Connected',
   contact: 'Contact',
 };
 
