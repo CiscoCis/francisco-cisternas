@@ -1,0 +1,9 @@
+.byline {
+  margin-top: 14px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+
+.byline a {
+  color: var(--brand-700);
+}

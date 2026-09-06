@@ -1,0 +1,11 @@
+.card {
+  padding: 32px;
+  max-width: 680px;
+}
+
+.body {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  white-space: pre-line;
+}

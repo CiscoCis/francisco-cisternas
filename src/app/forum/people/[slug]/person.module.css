@@ -1,0 +1,105 @@
+.section {
+  padding-top: calc(var(--header-h) + 56px);
+}
+
+.crumb {
+  margin-bottom: 26px;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.crumb a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.crumb a:hover {
+  color: var(--accent-600);
+}
+
+.back {
+  transform: rotate(90deg);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 26px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  padding: 32px;
+}
+
+.photoWrap {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.name {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 2.4vw, 36px);
+  color: var(--brand-900);
+}
+
+.roleLine {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--brand-700);
+}
+
+.location,
+.programme {
+  margin-top: 4px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+
+.intro {
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.tagBlock {
+  margin-top: 24px;
+}
+
+.tagLabel {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.linkedin {
+  margin-top: 26px;
+}

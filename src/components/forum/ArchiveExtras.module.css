@@ -1,0 +1,24 @@
+/* A few small additions to BlogArchive.module.css's shared chrome, reused
+   across every Forum listing page (Conversations, People, Opportunities,
+   Events). */
+
+.grid {
+  margin-top: 26px;
+}
+
+.search {
+  max-width: 420px;
+  margin-bottom: 22px;
+}
+
+.suggestPanel {
+  margin-top: 48px;
+  padding: 32px;
+  max-width: 640px;
+}
+
+@media (max-width: 520px) {
+  .suggestPanel {
+    padding: 22px 20px;
+  }
+}

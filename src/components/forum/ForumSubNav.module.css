@@ -1,0 +1,54 @@
+.wrap {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 20;
+  background: var(--glass-card);
+  border-bottom: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(16px) saturate(150%);
+}
+
+.scroller {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.scroller ul {
+  display: flex;
+  gap: 4px;
+  padding-block: 4px;
+  white-space: nowrap;
+}
+
+.scroller a {
+  display: inline-flex;
+  align-items: center;
+  padding: 11px 15px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.scroller a:hover {
+  color: var(--brand-800);
+}
+
+.active {
+  color: var(--brand-900) !important;
+  border-color: var(--red);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .scroller a {
+    min-height: 44px;
+  }
+}

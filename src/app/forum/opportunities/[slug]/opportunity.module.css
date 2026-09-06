@@ -1,0 +1,16 @@
+.card {
+  max-width: 680px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.apply {
+  margin-top: 26px;
+  display: inline-flex;
+  width: auto;
+}

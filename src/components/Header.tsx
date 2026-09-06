@@ -141,10 +141,14 @@ export default function Header({ nav }: { nav: NavItem[] }) {
   const [wordmarkFirst, ...wordmarkRest] = profile.name.split(' ');
   const wordmarkLast = wordmarkRest.join(' ');
 
-  const items = nav.map((item) => ({
-    ...item,
-    isActive: isHome ? active === item.id : false,
-  }));
+  // A nav item with `href` (e.g. Forum) is a real separate route: it's
+  // active whenever the current path is inside it, and clicking it is a
+  // normal navigation — no scroll-hijacking, no hash bookkeeping.
+  const items = nav.map((item) =>
+    item.href
+      ? { ...item, isActive: pathname.startsWith(item.href) }
+      : { ...item, isActive: isHome ? active === item.id : false }
+  );
 
   return (
     <header
@@ -174,14 +178,25 @@ export default function Header({ nav }: { nav: NavItem[] }) {
           <ul>
             {items.map((item) => (
               <li key={item.id}>
-                <a
-                  href={href(item.id)}
-                  onClick={(e) => go(e, item.id)}
-                  className={item.isActive ? styles.active : undefined}
-                  aria-current={item.isActive ? 'true' : undefined}
-                >
-                  {item.label}
-                </a>
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={item.isActive ? styles.active : undefined}
+                    aria-current={item.isActive ? 'true' : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <a
+                    href={href(item.id)}
+                    onClick={(e) => go(e, item.id)}
+                    className={item.isActive ? styles.active : undefined}
+                    aria-current={item.isActive ? 'true' : undefined}
+                  >
+                    {item.label}
+                  </a>
+                )}
               </li>
             ))}
           </ul>
@@ -212,13 +227,23 @@ export default function Header({ nav }: { nav: NavItem[] }) {
           <ul>
             {items.map((item) => (
               <li key={item.id}>
-                <a
-                  href={href(item.id)}
-                  onClick={(e) => go(e, item.id)}
-                  className={item.isActive ? styles.active : undefined}
-                >
-                  {item.label}
-                </a>
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={item.isActive ? styles.active : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <a
+                    href={href(item.id)}
+                    onClick={(e) => go(e, item.id)}
+                    className={item.isActive ? styles.active : undefined}
+                  >
+                    {item.label}
+                  </a>
+                )}
               </li>
             ))}
           </ul>

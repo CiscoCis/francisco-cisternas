@@ -79,6 +79,13 @@ jobs:
       # Connected" form posts to (scripts/guestbook-endpoint.gs). Until set,
       # that form is visible but submitting does nothing, same principle as
       # the contact form above.
+      # SUPABASE_URL/SUPABASE_ANON_KEY are the Forum's Supabase project URL
+      # and public anon key (Settings -> API in the Supabase dashboard) --
+      # read directly by the browser for fast public lookups. FORUM_ENDPOINT
+      # is the Apps Script Web App URL that handles every Forum write
+      # (scripts/forum-endpoint.gs); it holds the privileged Supabase
+      # service-role key itself, never exposed here. Until these are set,
+      # every Forum form is visible but submitting does nothing.
       - run: npm run build:tina
         env:
           BASE_PATH: ${{ vars.SITE_URL && '' || steps.base.outputs.path }}
@@ -91,6 +98,9 @@ jobs:
           NEXT_PUBLIC_ANALYTICS_ENDPOINT: ${{ vars.ANALYTICS_ENDPOINT }}
           NEXT_PUBLIC_ANALYTICS_SECRET: ${{ secrets.ANALYTICS_SECRET }}
           NEXT_PUBLIC_GUESTBOOK_ENDPOINT: ${{ vars.GUESTBOOK_ENDPOINT }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_FORUM_ENDPOINT: ${{ vars.FORUM_ENDPOINT }}
 
       # Stops GitHub Pages running the output through Jekyll, which would
       # strip the _next/ directory and break every stylesheet and script.

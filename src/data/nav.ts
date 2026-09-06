@@ -10,7 +10,11 @@
 
 import type { SectionKey } from '@/lib/content/siteSettings';
 
-export type NavItem = { id: string; label: string };
+// `href`, when present, marks a real separate route (e.g. the Forum) rather
+// than a same-page section anchor — Header.tsx renders these two cases
+// differently (a plain navigation link vs. the scroll-and-hash behavior
+// every homepage section uses).
+export type NavItem = { id: string; label: string; href?: string };
 
 const LABELS: Record<SectionKey, string> = {
   about: 'About',
@@ -32,7 +36,7 @@ export function buildNav(
   hasVideos: boolean,
   hasRecommendations: boolean
 ): NavItem[] {
-  return order
+  const items: NavItem[] = order
     .filter((key) => {
       if (key === 'media') return hasMedia;
       if (key === 'videos') return hasVideos;
@@ -40,4 +44,14 @@ export function buildNav(
       return true;
     })
     .map((key) => ({ id: key, label: LABELS[key] }));
+
+  // The Forum is a separate route tree, not a homepage section, so it isn't
+  // part of `order`/`SectionKey` — it's spliced in here, next to Stay
+  // Connected, rather than appended at the very end.
+  const stayConnectedIdx = items.findIndex((i) => i.id === 'stayConnected');
+  const forumItem: NavItem = { id: 'forum', label: 'Forum', href: '/forum' };
+  const insertAt = stayConnectedIdx === -1 ? items.length : stayConnectedIdx + 1;
+  items.splice(insertAt, 0, forumItem);
+
+  return items;
 }
