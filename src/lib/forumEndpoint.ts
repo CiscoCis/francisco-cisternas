@@ -30,7 +30,13 @@ export async function postToForumEndpoint(
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action, ...payload }),
     });
-    return res.ok;
+    // Apps Script's ContentService always answers with HTTP 200, even when
+    // the handler caught an error and reported { ok: false, error } in the
+    // body (e.g. Supabase rejected the insert) — so res.ok alone can't tell
+    // success from failure. The JSON body is the only real signal.
+    if (!res.ok) return false;
+    const data = (await res.json().catch(() => null)) as { ok?: boolean } | null;
+    return data?.ok === true;
   } catch {
     return false;
   }

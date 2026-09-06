@@ -50,7 +50,11 @@ export default function StayConnectedForm() {
           page: typeof window !== 'undefined' ? window.location.href : '',
         }),
       });
-      const ok = res.ok;
+      // Apps Script's ContentService always answers with HTTP 200, even when
+      // the handler caught a validation error and reported { ok: false }
+      // in the body — so res.ok alone can't tell success from failure.
+      const data = res.ok ? await res.json().catch(() => null) : null;
+      const ok = data?.ok === true;
       setState(ok ? 'ok' : 'error');
       if (ok) {
         setForm(EMPTY);
