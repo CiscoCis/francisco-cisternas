@@ -53,7 +53,6 @@ const SECTION_LABELS: Record<string, string> = {
   writing: 'Blog',
   beyond: 'Beyond Work',
   recommendations: 'Recommendations',
-  stayConnected: 'Stay Connected',
   contact: 'Contact',
 };
 
@@ -402,45 +401,6 @@ export default defineConfig({
           },
           { type: 'string', name: 'url', label: 'Link', required: true },
           { type: 'boolean', name: 'draft', label: 'Draft (hidden from the live site)' },
-        ],
-      },
-      {
-        name: 'guestbookMessage',
-        label: 'Stay Connected Messages',
-        path: 'content/guestbook',
-        format: 'json',
-        ui: { router: () => undefined },
-        fields: [
-          {
-            type: 'string',
-            name: 'displayName',
-            label: 'Name to show (leave blank for "Anonymous")',
-            isTitle: true,
-            required: true,
-          },
-          {
-            type: 'string',
-            name: 'programme',
-            label: 'Programme (optional, e.g. "MSc Marketing")',
-          },
-          { type: 'string', name: 'graduationYear', label: 'Graduation year (optional)' },
-          {
-            type: 'string',
-            name: 'message',
-            label: 'Message',
-            required: true,
-            ui: { component: 'textarea' },
-          },
-          {
-            type: 'string',
-            name: 'submittedAt',
-            label: 'Submitted (from the incoming message — leave as-is)',
-          },
-          {
-            type: 'boolean',
-            name: 'draft',
-            label: 'Draft — keep unchecked to publish this message on the site',
-          },
         ],
       },
       {
@@ -823,7 +783,6 @@ export default defineConfig({
                   { value: 'writing', label: 'Blog' },
                   { value: 'beyond', label: 'Beyond Work' },
                   { value: 'recommendations', label: 'Recommendations' },
-                  { value: 'stayConnected', label: 'Stay Connected' },
                   { value: 'contact', label: 'Contact' },
                 ],
               },

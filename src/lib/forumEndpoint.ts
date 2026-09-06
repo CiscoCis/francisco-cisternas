@@ -5,8 +5,8 @@
 // signup) — all seven post to the one Apps Script Web App
 // (scripts/forum-endpoint.gs), which holds the Supabase service-role key
 // server-side and does the actual insert. Same text/plain-to-dodge-CORS-
-// preflight trick already used by ContactForm.tsx and StayConnectedForm.tsx,
-// since Apps Script Web Apps don't answer OPTIONS requests.
+// preflight trick already used by ContactForm.tsx, since Apps Script Web
+// Apps don't answer OPTIONS requests.
 
 export const FORUM_ENDPOINT = process.env.NEXT_PUBLIC_FORUM_ENDPOINT ?? '';
 

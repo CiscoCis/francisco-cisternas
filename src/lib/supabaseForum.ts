@@ -6,8 +6,9 @@
 // designed to be public, and every view it reads exposes only already-public
 // columns — no emails, no unpublished rows). No @supabase/supabase-js
 // dependency needed for reads this simple; writes never happen from here at
-// all — see StayConnectedForm.tsx-style forms posting to scripts/forum-endpoint.gs
-// instead, which holds the privileged service-role key server-side.
+// all — see the Forum forms in src/components/forum/, which post to
+// scripts/forum-endpoint.gs instead, which holds the privileged
+// service-role key server-side.
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';

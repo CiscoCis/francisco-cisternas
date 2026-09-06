@@ -26,7 +26,6 @@ const LABELS: Record<SectionKey, string> = {
   writing: 'Blog',
   beyond: 'Beyond Work',
   recommendations: 'Recommendations',
-  stayConnected: 'Stay Connected',
   contact: 'Contact',
 };
 
@@ -46,11 +45,11 @@ export function buildNav(
     .map((key) => ({ id: key, label: LABELS[key] }));
 
   // The Forum is a separate route tree, not a homepage section, so it isn't
-  // part of `order`/`SectionKey` — it's spliced in here, next to Stay
-  // Connected, rather than appended at the very end.
-  const stayConnectedIdx = items.findIndex((i) => i.id === 'stayConnected');
+  // part of `order`/`SectionKey` — it's spliced in here, right before
+  // Contact, rather than appended at the very end.
+  const contactIdx = items.findIndex((i) => i.id === 'contact');
   const forumItem: NavItem = { id: 'forum', label: 'Forum', href: '/forum' };
-  const insertAt = stayConnectedIdx === -1 ? items.length : stayConnectedIdx + 1;
+  const insertAt = contactIdx === -1 ? items.length : contactIdx;
   items.splice(insertAt, 0, forumItem);
 
   return items;

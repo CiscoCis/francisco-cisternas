@@ -1,7 +1,7 @@
 /* Shared by every Forum form (comments, reactions-adjacent, RSVP, ask a
    question, suggest an opportunity, request an introduction, newsletter
    signup) — one stylesheet so all of them look and behave identically,
-   matching StayConnectedForm's already-established pattern. */
+   matching ContactForm's already-established pattern. */
 
 .form {
   display: block;

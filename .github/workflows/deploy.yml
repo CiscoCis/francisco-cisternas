@@ -75,10 +75,6 @@ jobs:
       # and shared secret the private TinaCMS "Analytics" screen reads from
       # (scripts/analytics-dashboard-endpoint.gs) -- unrelated to the two
       # trackers above.
-      # GUESTBOOK_ENDPOINT is the Apps Script Web App URL the "Stay
-      # Connected" form posts to (scripts/guestbook-endpoint.gs). Until set,
-      # that form is visible but submitting does nothing, same principle as
-      # the contact form above.
       # SUPABASE_URL/SUPABASE_ANON_KEY are the Forum's Supabase project URL
       # and public anon key (Settings -> API in the Supabase dashboard) --
       # read directly by the browser for fast public lookups. FORUM_ENDPOINT
@@ -97,7 +93,6 @@ jobs:
           NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
           NEXT_PUBLIC_ANALYTICS_ENDPOINT: ${{ vars.ANALYTICS_ENDPOINT }}
           NEXT_PUBLIC_ANALYTICS_SECRET: ${{ secrets.ANALYTICS_SECRET }}
-          NEXT_PUBLIC_GUESTBOOK_ENDPOINT: ${{ vars.GUESTBOOK_ENDPOINT }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_FORUM_ENDPOINT: ${{ vars.FORUM_ENDPOINT }}
