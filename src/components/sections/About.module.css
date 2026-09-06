@@ -79,7 +79,11 @@
 .journey {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Always one row, however many stops there are — the rail (which spans
+     the full width of this row) and each stop's marker stay in sync
+     automatically as entries are added or removed in TinaCMS, instead of
+     wrapping to a second row the rail doesn't reach. */
+  grid-template-columns: repeat(var(--journey-count, 3), minmax(0, 1fr));
   gap: 34px;
 }
 

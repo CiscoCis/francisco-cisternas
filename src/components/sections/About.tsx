@@ -102,7 +102,12 @@ export default function About() {
           <Reveal variant="trigger" className={styles.journeyRel}>
             <span className={`draw-line ${styles.rail}`} aria-hidden="true" />
 
-            <Reveal variant="group" as="ol" className={styles.journey}>
+            <Reveal
+              variant="group"
+              as="ol"
+              className={styles.journey}
+              style={{ ['--journey-count' as string]: journey.length }}
+            >
               {journey.map((stop, i) => (
                 <li
                   key={stop.place}
