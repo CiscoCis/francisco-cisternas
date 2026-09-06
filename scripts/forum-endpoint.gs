@@ -22,11 +22,22 @@
  *
  *   1. Create the Supabase project first (see scripts/supabase-forum-
  *      schema.sql's own header) and run that whole SQL file in its SQL
- *      Editor. Then, from Settings → API, copy:
+ *      Editor — it now also grants service_role its expected default
+ *      privileges, which some projects don't set up automatically (see
+ *      that file's own comment on this). Then, from Settings → API Keys,
+ *      copy:
  *        - the Project URL
- *        - the service_role key (NOT the anon key — this script needs the
- *          privileged one; the anon key is what the website's own code
- *          uses separately, for public reads)
+ *        - the service_role key — click the "Legacy anon, service_role
+ *          API keys" tab (NOT the newer "Publishable and secret API keys"
+ *          tab's secret key). The newer sb_secret_... key format has a
+ *          built-in guard that rejects requests it thinks look
+ *          browser-like, which Apps Script's server-to-server calls
+ *          trigger as a false positive ("Forbidden use of secret API key
+ *          in browser") — the older JWT-style key (starts with `eyJ`)
+ *          doesn't have this restriction and is the correct one here.
+ *        - separately, the anon/publishable key is what the website's own
+ *          code uses for public reads — that one's fine as the newer
+ *          format, since browser use is exactly what it's for.
  *
  *   2. Go to script.google.com/home → New project. Delete the default
  *      code and paste this entire file in.
@@ -62,6 +73,26 @@
  *   8. Restart `npm run dev`, submit a real test through each Forum form,
  *      and confirm a row appears in the matching Supabase table.
  *
+ *  ── STEP 9 (optional, ~5 minutes): make the newsletter welcome email ────
+ *  ── genuinely come from the professor's own address ──────────────────────
+ *
+ *  Newsletter signups get an automatic welcome email. By default it's sent
+ *  from whichever Google account runs this script, with the display name
+ *  "Francisco Cisternas" — readable, but not his real address. This is the
+ *  exact same platform rule and fix already used for the contact form (see
+ *  scripts/google-sheets-endpoint.gs, step 7): Apps Script can only send
+ *  FROM the account running the script, or an address that account has
+ *  verified under Gmail's "Send mail as" feature.
+ *
+ *   9a. In the Gmail account that owns *this* script, Settings → See all
+ *       settings → Accounts and Import → "Send mail as" → Add another
+ *       email address → enter the professor's real address (same as
+ *       NOTIFY_EMAIL below) → follow the verification email it sends.
+ *   9b. Once verified, set WELCOME_FROM_ADDRESS below to that same address,
+ *       save, and redeploy a new version (see "IF YOU EDIT THIS SCRIPT"
+ *       below). Leave it as '' until then — an unverified address makes
+ *       every welcome email fail instead of sending at all.
+ *
  *  ── IF YOU EDIT THIS SCRIPT AFTER THE FIRST DEPLOYMENT ──────────────────
  *  Deploy → Manage deployments → pencil icon → Version: "New version" →
  *  Deploy — the same rule as the other two scripts. Editing the code
@@ -72,6 +103,13 @@
 
 var NOTIFY_EMAIL = 'fcisternas@cuhk.edu.hk';
 var SEND_AS_NAME = 'Francisco Cisternas — Website';
+
+/** The address the newsletter welcome email is sent FROM (see step 9
+ *  above). Leave exactly '' until that one-time Gmail alias verification
+ *  is done — MailApp throws "Invalid from address" otherwise. Once set,
+ *  replies from a subscriber go to NOTIFY_EMAIL either way (see
+ *  `replyTo` in handleNewsletterSignup), regardless of this setting. */
+var WELCOME_FROM_ADDRESS = '';
 
 function props() {
   return PropertiesService.getScriptProperties();
@@ -260,13 +298,48 @@ function handleAskQuestion(data) {
 }
 
 function handleNewsletterSignup(data) {
+  var name = str(data.name);
   var email = str(data.email);
-  if (!email || email.indexOf('@') === -1) return json({ ok: false, error: 'invalid' });
+  if (!name || !email || email.indexOf('@') === -1) return json({ ok: false, error: 'invalid' });
 
   upsert('forum_newsletter_subscribers', 'email', {
+    name: name,
     email: email,
     interests: Array.isArray(data.interests) ? data.interests : [],
   });
+
+  var welcomeOptions = {
+    to: email,
+    name: 'Francisco Cisternas',
+    replyTo: NOTIFY_EMAIL || undefined,
+    subject: 'Welcome to the community, ' + name + '!',
+    body:
+      'Hi ' + name + ',\n\n' +
+      'Thanks for subscribing to the Forum — it\'s genuinely nice to have you here.\n\n' +
+      'A community like this only works because people like you show up, so consider ' +
+      'this a small, sincere welcome from me.\n\n' +
+      'About once a month, you\'ll get a short note in your inbox: a thought I\'ve been ' +
+      'chewing on, something interesting from the community, a new opportunity, or an ' +
+      'upcoming talk worth knowing about. That\'s it — no spam, no daily noise, and ' +
+      'unsubscribing is always one click away.\n\n' +
+      'If there\'s ever something you\'d like to see more of, just hit reply — I read ' +
+      'everything that comes back.\n\n' +
+      'Looking forward to having you around.\n\n' +
+      'Best regards,\n' +
+      'Francisco',
+  };
+  if (WELCOME_FROM_ADDRESS) welcomeOptions.from = WELCOME_FROM_ADDRESS;
+  MailApp.sendEmail(welcomeOptions);
+
+  if (NOTIFY_EMAIL) {
+    MailApp.sendEmail({
+      to: NOTIFY_EMAIL,
+      name: SEND_AS_NAME,
+      subject: 'New newsletter subscriber: ' + name,
+      body: name + ' <' + email + '> just subscribed to the Forum newsletter.',
+    });
+  }
+
   return json({ ok: true });
 }
 

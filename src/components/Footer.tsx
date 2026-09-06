@@ -24,7 +24,11 @@ export default function Footer({ nav }: { nav: NavItem[] }) {
           <ul>
             {nav.map((item) => (
               <li key={item.id}>
-                <a href={`${BASE_PATH}/#${item.id}`}>{item.label}</a>
+                {item.href ? (
+                  <Link href={item.href}>{item.label}</Link>
+                ) : (
+                  <a href={`${BASE_PATH}/#${item.id}`}>{item.label}</a>
+                )}
               </li>
             ))}
             <li>

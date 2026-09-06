@@ -72,7 +72,16 @@ alter table forum_reaction_counts enable row level security;
 
 -- This one is safe to expose as-is (just aggregate counts, no personal
 -- data), so it's granted directly rather than through a separate view.
+-- IMPORTANT: the GRANT alone is not enough once RLS is turned on -- with
+-- RLS enabled and zero policies, Postgres defaults to blocking every role
+-- (other than the owner / service_role's BYPASSRLS) from seeing ANY row,
+-- regardless of table-level GRANTs. An explicit permissive policy is
+-- required too, unlike forum_comments_public and forum_event_rsvp_counts
+-- below, which are VIEWs (a view runs with its creator's privileges, so
+-- it isn't subject to the base table's RLS at all).
 grant select on forum_reaction_counts to anon;
+create policy "Reaction counts are public" on forum_reaction_counts
+  for select using (true);
 
 -- ---------------------------------------------------------------------------
 -- 3. Event RSVPs
@@ -153,6 +162,7 @@ alter table forum_ask_questions enable row level security;
 -- ---------------------------------------------------------------------------
 create table if not exists forum_newsletter_subscribers (
   id uuid primary key default gen_random_uuid(),
+  name text,
   email text not null unique,
   interests text[] default '{}',
   subscribed_at timestamptz not null default now(),
@@ -162,3 +172,18 @@ create table if not exists forum_newsletter_subscribers (
 alter table forum_newsletter_subscribers enable row level security;
 -- Write-only; Francisco exports this table (Supabase table editor → export
 -- CSV, or a simple SQL query) to BCC when he sends an issue by hand.
+
+-- ---------------------------------------------------------------------------
+-- 8. Grant the service_role its expected default privileges
+-- ---------------------------------------------------------------------------
+-- service_role is meant to bypass RLS and have full access to every table
+-- by default -- but on some projects, unchecking "Automatically expose new
+-- tables" during project creation (the right call for locking down `anon`,
+-- see this file's own header) also blocks service_role's own default
+-- grants, since Supabase bundles both under one setting. Without this,
+-- every insert from the Apps Script fails with "permission denied for
+-- table ..." (Postgres error 42501) even though service_role should never
+-- see that error. Safe to run even if it already has these grants.
+grant usage on schema public to service_role;
+grant all on all tables in schema public to service_role;
+grant all on all sequences in schema public to service_role;

@@ -62,7 +62,18 @@ export default function CommentsPanel({ slug, locked }: { slug: string; locked?:
     if (reacted.has(key)) return;
     setReacted((s) => new Set(s).add(key));
     setCounts((c) => ({ ...c, [key]: (c[key as keyof typeof c] ?? 0) + 1 }));
-    await postToForumEndpoint('reaction', { conversationSlug: slug, reaction: key });
+    const ok = await postToForumEndpoint('reaction', { conversationSlug: slug, reaction: key });
+    if (!ok) {
+      // Roll back the optimistic update — the write didn't actually land,
+      // so let the visitor try again rather than showing a count that
+      // doesn't match reality.
+      setReacted((s) => {
+        const next = new Set(s);
+        next.delete(key);
+        return next;
+      });
+      setCounts((c) => ({ ...c, [key]: Math.max(0, (c[key as keyof typeof c] ?? 1) - 1) }));
+    }
   };
 
   const submitComment = async (e: React.FormEvent) => {
