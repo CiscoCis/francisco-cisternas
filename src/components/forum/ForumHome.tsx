@@ -147,8 +147,11 @@ export default function ForumHome({
           </Reveal>
         )}
 
-        <Reveal className={`panel ${styles.newsletterCard}`}>
-          <NewsletterSignupForm />
+        <Reveal className={styles.block}>
+          <p className={styles.blockLabel}>Stay in the loop</p>
+          <div className={`panel ${styles.newsletterCard}`}>
+            <NewsletterSignupForm />
+          </div>
         </Reveal>
       </div>
     </div>

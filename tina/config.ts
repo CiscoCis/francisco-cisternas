@@ -692,31 +692,6 @@ export default defineConfig({
         ],
       },
       {
-        name: 'forumNewsletterIssue',
-        label: 'Forum — Newsletter Archive',
-        path: 'content/forum-newsletter',
-        format: 'json',
-        ui: { router: () => undefined },
-        fields: [
-          {
-            type: 'string',
-            name: 'slug',
-            label: 'Slug (becomes the URL — never change after publishing)',
-            required: true,
-          },
-          { type: 'string', name: 'title', label: 'Issue title', isTitle: true, required: true },
-          { type: 'string', name: 'date', label: 'Date (YYYY-MM-DD)', required: true },
-          {
-            type: 'object',
-            name: 'body',
-            label: 'Body',
-            list: true,
-            templates: blogBlockTemplates as any,
-          },
-          { type: 'boolean', name: 'draft', label: 'Draft (hidden from the live site)' },
-        ],
-      },
-      {
         name: 'forumSettings',
         label: 'Forum — Settings',
         path: 'content/forum-settings',

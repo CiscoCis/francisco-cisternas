@@ -11,7 +11,6 @@ const ITEMS = [
   { href: '/forum/opportunities', label: 'Opportunities' },
   { href: '/forum/events', label: 'Events' },
   { href: '/forum/ask', label: 'Ask' },
-  { href: '/forum/newsletter', label: 'Newsletter' },
   { href: '/forum/guidelines', label: 'Guidelines' },
 ];
 
