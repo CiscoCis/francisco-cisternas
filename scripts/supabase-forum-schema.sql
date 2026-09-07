@@ -215,3 +215,14 @@ alter table forum_newsletter_subscribers enable row level security;
 grant usage on schema public to service_role;
 grant all on all tables in schema public to service_role;
 grant all on all sequences in schema public to service_role;
+
+-- The three GRANTs above only cover tables that already exist -- Postgres
+-- doesn't retroactively apply them to anything created afterward, which is
+-- exactly what bit us adding forum_people_submissions later (same
+-- "permission denied for table ..." error, on a table created well after
+-- the grants above were first run). ALTER DEFAULT PRIVILEGES fixes this
+-- going forward: any new table created in `public` from now on
+-- automatically grants service_role full access, no manual GRANT needed
+-- again. Safe to run even if already in place.
+alter default privileges in schema public grant all on tables to service_role;
+alter default privileges in schema public grant all on sequences to service_role;
