@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { matchesPersonQuery, type ForumPerson } from '@/lib/content/people';
 import PersonCard from './PersonCard';
+import JoinDirectoryForm from './JoinDirectoryForm';
 import { Icon } from '../Icons';
 import styles from '../BlogArchive.module.css';
 import own from './ArchiveExtras.module.css';
@@ -39,7 +40,8 @@ export default function PeopleDirectory({ items }: { items: ForumPerson[] }) {
           <div className={`panel ${styles.empty}`}>
             <h2 className={styles.emptyTitle}>Nobody listed yet</h2>
             <p className={styles.emptyText}>
-              The directory is just getting started — check back soon.
+              The directory is just getting started — check back soon, or ask
+              to be the first one listed below.
             </p>
           </div>
         ) : (
@@ -65,6 +67,10 @@ export default function PeopleDirectory({ items }: { items: ForumPerson[] }) {
             </ul>
           </>
         )}
+
+        <div className={`panel ${own.suggestPanel}`}>
+          <JoinDirectoryForm />
+        </div>
       </div>
     </div>
   );

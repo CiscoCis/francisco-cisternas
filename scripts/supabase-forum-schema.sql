@@ -127,6 +127,34 @@ alter table forum_opportunity_submissions enable row level security;
 -- public view is needed at all.
 
 -- ---------------------------------------------------------------------------
+-- 4b. "Join the People directory" self-submissions awaiting review
+-- ---------------------------------------------------------------------------
+-- Deliberately separate from newsletter subscribers: subscribing to emails
+-- and asking to be publicly listed on the People page are two different
+-- consents. A submission here is moderated exactly like an opportunity
+-- suggestion -- the professor reviews it in the Supabase table editor and,
+-- for ones he's happy to publish, adds a matching entry himself in TinaCMS
+-- ("Forum -- People"). Nothing here becomes public on its own.
+create table if not exists forum_people_submissions (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  role text,
+  organisation text,
+  location text,
+  programme text,
+  graduation_year text,
+  linkedin_url text,
+  intro text,
+  expertise text,
+  status text not null default 'pending', -- 'pending' | 'approved' | 'rejected'
+  created_at timestamptz not null default now()
+);
+
+alter table forum_people_submissions enable row level security;
+-- Write-only from the website's point of view; no public view needed.
+
+-- ---------------------------------------------------------------------------
 -- 5. "Request an introduction" to a person in the directory
 -- ---------------------------------------------------------------------------
 create table if not exists forum_introduction_requests (

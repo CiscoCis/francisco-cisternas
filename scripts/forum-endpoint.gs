@@ -139,6 +139,8 @@ function doPost(e) {
         return handleRsvp(data);
       case 'opportunity-submission':
         return handleOpportunitySubmission(data);
+      case 'person-submission':
+        return handlePersonSubmission(data);
       case 'introduction-request':
         return handleIntroductionRequest(data);
       case 'ask-question':
@@ -246,6 +248,44 @@ function handleOpportunitySubmission(data) {
       body: 'From: ' + str(data.submittedByName) + ' <' + str(data.submittedByEmail) + '>\n\n' +
         title + '\n' + str(data.organisation) + '\n' + str(data.url) + '\n\n' + str(data.description) +
         '\n\n—\nReview and publish (or not) from the Supabase table editor / TinaCMS Forum — Opportunities.',
+    });
+  }
+  return json({ ok: true });
+}
+
+function handlePersonSubmission(data) {
+  var name = str(data.name);
+  var email = str(data.email);
+  if (!name || !email || email.indexOf('@') === -1) return json({ ok: false, error: 'invalid' });
+
+  insert('forum_people_submissions', {
+    name: name,
+    email: email,
+    role: str(data.role),
+    organisation: str(data.organisation),
+    location: str(data.location),
+    programme: str(data.programme),
+    graduation_year: str(data.graduationYear),
+    linkedin_url: str(data.linkedinUrl),
+    intro: str(data.intro),
+    expertise: str(data.expertise),
+  });
+
+  if (NOTIFY_EMAIL) {
+    MailApp.sendEmail({
+      to: NOTIFY_EMAIL,
+      name: SEND_AS_NAME,
+      subject: 'New "Join the directory" request: ' + name,
+      body:
+        name + ' <' + email + '> would like to be listed in the Forum People directory.\n\n' +
+        (str(data.role) ? 'Role: ' + str(data.role) + '\n' : '') +
+        (str(data.organisation) ? 'Organisation: ' + str(data.organisation) + '\n' : '') +
+        (str(data.location) ? 'Location: ' + str(data.location) + '\n' : '') +
+        (str(data.linkedinUrl) ? 'LinkedIn: ' + str(data.linkedinUrl) + '\n' : '') +
+        '\n' + str(data.intro) +
+        (str(data.expertise) ? '\n\nCan help with: ' + str(data.expertise) : '') +
+        '\n\n—\nReview in the Supabase table editor (forum_people_submissions). If you\'d ' +
+        'like to publish this, add a matching entry in TinaCMS under "Forum — People".',
     });
   }
   return json({ ok: true });

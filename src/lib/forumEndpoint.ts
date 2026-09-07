@@ -15,6 +15,7 @@ export type ForumAction =
   | 'reaction'
   | 'rsvp'
   | 'opportunity-submission'
+  | 'person-submission'
   | 'introduction-request'
   | 'ask-question'
   | 'newsletter-signup';
